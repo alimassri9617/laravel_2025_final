@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .dashboard-container {
+            padding: 20px;
+        }
+
+        .profile-section,
+        .task-section,
+        .earnings-section {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .card-title {
+            font-weight: bold;
+        }
+
+        .task-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+
+        .task-status {
+            font-weight: bold;
+            color: green;
+        }
+
+        .earnings-summary {
+            font-size: 1.2em;
+        }
+
+        .notification {
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+ 
+
+        <!-- Task Management Section -->
+        <div class="task-section">
+            <h4 class="card-title">Assigned Deliveries</h4>
+            <div class="task-list">
+                <div class="task-item">
+                    <p><strong>Order #12345</strong></p>
+                    <p>Pickup: 123 Main St, Drop-off: 456 Elm St</p>
+                    <p class="task-status">Status: <span class="text-success">In Progress</span></p>
+                </div>
+                <div class="task-item">
+                    <p><strong>Order #12346</strong></p>
+                    <p>Pickup: 789 Oak St, Drop-off: 101 Pine St</p>
+                    <p class="task-status">Status: <span class="text-warning">Pending</span></p>
+                </div>
+                <div class="task-item">
+                    <p><strong>Order #12347</strong></p>
+                    <p>Pickup: 202 Maple St, Drop-off: 303 Birch St</p>
+                    <p class="task-status">Status: <span class="text-danger">Cancelled</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings Overview Section -->
+        <div class="earnings-section">
+            <h4 class="card-title">Earnings Overview</h4>
+            <div class="earnings-summary">
+                <p><strong>Total Earnings:</strong> $350.00</p>
+                <p><strong>Pending Payments:</strong> $120.00</p>
+                <p><strong>Completed Deliveries:</strong> 25</p>
+                <button class="btn btn-success">View Earnings Details</button>
+            </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="notification-section">
+            <h4 class="card-title">Notifications</h4>
+            <div class="notification">
+                <p><strong>New Order:</strong> Order #12348 has been assigned to you. Please confirm.</p>
+            </div>
+            <div class="notification">
+                <p><strong>Reminder:</strong> Your shift ends in 2 hours. Please complete any pending deliveries.</p>
+            </div>
+            <div class="notification">
+                <p><strong>Payment Update:</strong> You have a new payment of $80.00 pending for confirmation.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS & Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Example of handling a notification click
+        document.querySelectorAll('.notification').forEach(notification => {
+            notification.addEventListener('click', () => {
+                alert("You clicked on a notification!");
+            });
+        });
+    </script>
+</body>
+
+</html>

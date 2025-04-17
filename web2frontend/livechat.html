@@ -1,0 +1,67 @@
+<!-- PAGE 9: Live Chat -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live Chat</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f8f9fa; }
+    .chat-container { max-width: 600px; margin: 50px auto; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 80vh; }
+    .chat-header { background: #343a40; color: white; padding: 15px; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+    .chat-messages { flex: 1; padding: 15px; overflow-y: auto; border-bottom: 1px solid #ddd; }
+    .message { margin-bottom: 15px; }
+    .message.sent { text-align: right; }
+    .message .bubble { display: inline-block; padding: 10px; border-radius: 10px; max-width: 70%; }
+    .message.sent .bubble { background: #0d6efd; color: white; }
+    .message.received .bubble { background: #e9ecef; color: black; }
+    .chat-input { display: flex; padding: 15px; }
+    .chat-input input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px; }
+    .chat-input button { padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">Live Chat with Driver</div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="message received"><div class="bubble">Hello! I'm your driver. Where should I pick up the package?</div></div>
+      <div class="message sent"><div class="bubble">Hi! Please pick it up at 123 Main St.</div></div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Type your message...">
+      <button class="btn btn-primary" id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    sendBtn.addEventListener('click', () => {
+      const msg = chatInput.value.trim();
+      if (msg) {
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message', 'sent');
+        msgDiv.innerHTML = `<div class='bubble'>${msg}</div>`;
+        chatMessages.appendChild(msgDiv);
+        chatInput.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        setTimeout(() => autoReply(), 1000);
+      }
+    });
+
+    function autoReply() {
+      const reply = document.createElement('div');
+      reply.classList.add('message', 'received');
+      reply.innerHTML = `<div class='bubble'>Got it! Heading there now.</div>`;
+      chatMessages.appendChild(reply);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  </script>
+</body>
+</html>
+
+<!-- Next Page: Payment Page -->
