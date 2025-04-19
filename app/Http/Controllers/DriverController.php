@@ -133,20 +133,7 @@ class DriverController extends Controller
        // 1. Have no driver assigned (NULL driver_id)
        // 2. Are in pending status
        // 3. Match the driver's work area
-       $deliveries = Delivery::whereNull('driver_id')
-                           ->where('status', 'pending')
-                           ->where(function($query) use ($driver) {
-                               if ($driver->work_area) {
-                                   $areas = explode(',', $driver->work_area);
-                                   foreach ($areas as $area) {
-                                       $query->orWhere('pickup_location', 'like', "%$area%")
-                                             ->orWhere('destination', 'like', "%$area%");
-                                   }
-                               }
-                           })
-                           ->with('client') // Eager load the client relationship
-                           ->orderBy('created_at', 'desc')
-                           ->get();
+       $deliveries = Delivery::all();
    
        return view('driver.available-deliveries', [
            'driver' => $driver,
@@ -226,6 +213,20 @@ class DriverController extends Controller
             'pendingEarnings' => $pendingEarnings
         ]);
     }
+    public function delivaryDone(Request $request, $id)
+    {
+        if ($redirect = $this->checkDriverSession()) {
+            return $redirect;
+        }
+        if (!Session::has('driver_id')) {
+            return redirect()->route('driver.login');
+        }
+
+        $delivery = Delivery::findOrFail($id);
+        $delivery->update(['status' => 'completed']);
+
+        return back()->with('success', 'Delivery marked as completed!');
+    }
 
     // Profile settings
     public function showProfile()
@@ -280,5 +281,13 @@ class DriverController extends Controller
         $driver->update($data);
 
         return back()->with('success', 'Profile updated successfully!');
+    }
+    public function markAsComplete(Request $request, $id)
+    {
+        $delivery = Delivery::findOrFail($id);
+        $delivery->status = 'completed';
+         $delivery->save();
+
+    return redirect()->back()->with('success', 'Delivery marked as complete!');
     }
 }

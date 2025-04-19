@@ -67,15 +67,94 @@
                                             <i class="fas fa-eye"></i> View
                                         </a>
                                     </td>
+                                   <td>
+                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#chatModal">
+                                        <i class="fas fa-comments"></i> Chat with Driver
+                                    </button>
+                                    
+                                    <!-- Chat Modal -->
+                                    <div class="modal fade" id="chatModal" tabindex="-1">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Chat</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="chatMessages" style="height: 400px; overflow-y: auto; margin-bottom: 20px;">
+                                                        <!-- Messages will be loaded here -->
+                                                    </div>
+                                                    <form id="chatForm" action="{{ route('client.chat.store') }}" method="POST"></form>
+                                                        
+                                                        @csrf
+                                                        <input type="hidden" name="sender_type" value="client">
+                                                        <input type="hidden" name="delivery_id" value="{{ $delivery->id }}">
+                                                        <input type="hidden" name="sender_id" value="{{ $delivery->driver_id }}">
+                                                        <div class="input-group">
+                                                            <textarea class="form-control" name="message" placeholder="Type your message"></textarea>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                <i class="fas fa-paper-plane"></i>
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   </td>
                                 </tr>
+                                
                                 @endforeach
                             </tbody>
                         </table>
+                       
                     </div>
                 @endif
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+<script>
+    const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
+        cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+        encrypted: true
+    });
+
+    // Initialize Axios
+    window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+    document.getElementById('chatForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        formData.append('sender_type', 'client');
+        
+        axios.post('/messages', formData)
+            .then(response => {
+                this.reset();
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
+
+    // Subscribe to channel
+    const channel = pusher.subscribe('delivery-chat.{{ $delivery->id }}');
+    channel.bind('new-message', function(data,e) {
+        e.preventDefault();
+        const messageHtml = `
+            <div class="message ${data.sender_type === 'client' ? 'text-end' : 'text-start'} mb-2">
+                <div class="card ${data.sender_type === 'client' ? 'bg-primary text-white' : 'bg-light'}">
+                    <div class="card-body p-2">
+                        <p class="mb-0">${data.message}</p>
+                        <small class="text-muted">${new Date(data.created_at).toLocaleTimeString()}</small>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('chatMessages').innerHTML += messageHtml;
+    });
+</script>
 </body>
 </html>

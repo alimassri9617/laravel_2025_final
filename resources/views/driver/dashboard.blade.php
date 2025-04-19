@@ -114,7 +114,7 @@
                                         <th>Destination</th>
                                         <th>Amount</th>
                                         <th>Status</th>
-                                        <th>Actions</th>
+                                        <th>completed</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -133,9 +133,20 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <a href="#" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye"></i> View
-                                            </a>
+                                            
+                                            <form action="{{ route('driver.complete', $delivery->id) }}" method="GET">
+                                                
+                                               
+                                                @if($delivery->status == 'completed')
+                                                    <span class="badge bg-success">Yes</span>
+                                                    <button type="submit" class="btn btn-secondary btn-sm mt-2" disabled>Completed</button>
+                                                @else
+                                                    <span class="badge bg-danger">No</span>
+                                                    <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
+                                                @endif
+                                            </form>
+                                            
+                                            
                                         </td>
                                     </tr>
                                     @endforeach

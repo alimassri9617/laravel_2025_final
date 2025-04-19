@@ -7,6 +7,7 @@ use App\Http\Controllers\DriverController;
 use App\Models\Client;
 use App\Models\Delivery;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\MessageController;
 Route::get('/', function () {
     return view('index');
 })->name('home');
@@ -60,18 +61,21 @@ Route::post('/login', [App\Http\Controllers\Login::class, 'login'])->name('login
 
 
 // Client routes
-Route::prefix('client')->name('client.')->group(function() {
+Route::prefix('client')->name('client.')->group(function () {
     // Authentication
     Route::get('/login', [ClientController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [ClientController::class, 'login']);
     Route::get('/logout', [ClientController::class, 'logout'])->name('logout');
-    
+
     // Protected routes
     Route::get('/dashboard', [ClientController::class, 'dashboard'])->name('dashboard');
     Route::get('/deliveries', [ClientController::class, 'deliveries'])->name('deliveries');
     Route::get('/deliveries/create', [ClientController::class, 'createDelivery'])->name('deliveries.create');
     Route::post('/deliveries', [ClientController::class, 'storeDelivery'])->name('deliveries.store');
     Route::get('/deliveries/{id}', [ClientController::class, 'showDelivery'])->name('deliveries.show');
+
+    // Chat message storage
+    Route::post('/chat', [MessageController::class, 'store'])->name('chat.store');
 });
 
 // Route::prefix('driver')->name('driver.')->group(function() {
@@ -116,6 +120,10 @@ Route::prefix('driver')->name('driver.')->group(function() {
     Route::get('/earnings', [DriverController::class, 'earnings'])->name('earnings');
     Route::get('/profile', [DriverController::class, 'showProfile'])->name('profile');
     Route::post('/profile', [DriverController::class, 'updateProfile'])->name('profile.update');
+   // If you're using GET (as in your form)
+Route::get('/complete/{id}', [DriverController::class, 'markAsComplete'])->name('complete');
+
+
 });
 
 
