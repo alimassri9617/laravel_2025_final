@@ -30,11 +30,10 @@
                 <div class="col-md-4">
                     <div class="card shadow-sm mb-4">
                         <div class="card-body text-center">
-                            @if($driver->image)
-                                <img src="{{ asset('storage/' . $driver->image) }}" class="rounded-circle mb-3" width="150" height="150">
-                            @else
-                                <img src="{{ asset('img/driver-avatar.jpg') }}" class="rounded-circle mb-3" width="150" height="150">
-                            @endif
+                            
+                            <img src="{{ asset('driver_images/' . $driver->image) }}" class="rounded-circle mb-3" width="150" height="150">
+
+                           
                             <h4>{{ $driver->fname }} {{ $driver->lname }}</h4>
                             <p class="text-muted">{{ $driver->vehicle_type }} Driver</p>
                         </div>

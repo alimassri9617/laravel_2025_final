@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Delivery;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Hash;
+    use Illuminate\Support\Facades\Session;
 
 class ClientController extends Controller
 {
@@ -17,25 +18,26 @@ class ClientController extends Controller
     
 
     // Handle login
+    
+    
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
-
-        $client = Client::where('email', $request->email)
-                      ->where('password', $request->password) // In production, use Hash::check()
-                      ->first();
-
-        if ($client) {
+    
+        $client = Client::where('email', $request->email)->first();
+    
+        if ($client && Hash::check($request->password, $client->password)) {
             Session::put('client_id', $client->id);
             Session::put('client_name', $client->fname . ' ' . $client->lname);
             return redirect()->route('client.dashboard');
         }
-
+    
         return back()->with('error', 'Invalid credentials');
     }
+    
 
     // Handle logout
     public function logout()
@@ -43,7 +45,30 @@ class ClientController extends Controller
         Session::forget(['client_id', 'client_name']);
         return redirect()->route('client.login');
     }
+    public function showRegistrationForm()
+    {
+        return view('client.register');
+    }
+    public function register(Request $request)
+    {
+        $request->validate([
+            'fname' => 'required|string|max:255',
+            'lname' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:clients',
+            'phone' => 'required|string|max:15',
+            'password' => 'required|string|min:8|confirmed'
+        ]);
 
+        $client = new Client();
+        $client->fname = $request->fname;
+        $client->lname = $request->lname;
+        $client->email = $request->email;
+        $client->phone = $request->phone;
+        $client->password = bcrypt($request->password);
+        $client->save();
+
+        return redirect()->route('client.login')->with('success', 'Registration successful! Please log in.');
+    }
     // Show dashboard
     public function dashboard()
     {
