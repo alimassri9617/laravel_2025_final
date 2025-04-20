@@ -31,11 +31,12 @@
                         <a class="nav-link" href="#how-it-works">How It Works</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href={{ route('login') }}>Login</a>
+                        <a class="nav-link" href={{ route('driver.login') }}>Driver Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light" href="register.html">Register</a>
+                        <a class="nav-link" href={{ route('client.login') }}>Client Login</a>
                     </li>
+                   
                 </ul>
             </div>
         </div>
@@ -49,7 +50,7 @@
                     <h1 class="display-4 fw-bold mb-4">Fast & Reliable Delivery Services</h1>
                     <p class="lead mb-4">Connect with trusted drivers for all your delivery needs. Real-time tracking, secure payments, and excellent service.</p>
                     <div class="d-flex gap-3">
-                        <a href="register.html" class="btn btn-primary btn-lg">Get Started</a>
+                        <a href={{ route('client.login') }} class="btn btn-primary btn-lg">Get Started</a>
                         <a href="#how-it-works" class="btn btn-outline-primary btn-lg">Learn More</a>
                     </div>
                 </div>

@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Delivery;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\SocialLoginController;
 Route::get('/', function () {
     return view('index');
 })->name('home');
@@ -73,7 +74,8 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/deliveries/create', [ClientController::class, 'createDelivery'])->name('deliveries.create');
     Route::post('/deliveries', [ClientController::class, 'storeDelivery'])->name('deliveries.store');
     Route::get('/deliveries/{id}', [ClientController::class, 'showDelivery'])->name('deliveries.show');
-
+    Route::get('/login/google', [SocialLoginController::class, 'redirectToGoogle']);
+    Route::get('/login/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
     // Chat message storage
     Route::post('/chat', [MessageController::class, 'store'])->name('chat.store');
 });
