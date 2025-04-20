@@ -38,6 +38,7 @@ class DriverController extends Controller
             'plate_number' => 'required|string|max:20',
             'work_area' => 'required|array',
             'work_area.*' => 'string',
+            
             'image' => 'nullable|image|max:2048'
         ]);
         $data = $request->only([
@@ -47,7 +48,9 @@ class DriverController extends Controller
         $data['work_area'] = implode(',', $request->work_area);
         $data['password'] = password_hash($request->password, PASSWORD_BCRYPT);
         if ($request->hasFile('image')) {
+           //i went to store the image in public folder not in storage
             $path = $request->file('image')->store('driver_images', 'public');
+          
             $data['image'] = $path;
         }
         $data['approved'] = false; // Set to false by default
@@ -82,7 +85,10 @@ class DriverController extends Controller
 
         $driver = Driver::where('email', $request->email)->first();
 
-       
+       $driverapproved=Driver::where('email', $request->email)->where('approved', true)->first();
+        if (!$driverapproved) {
+            return back()->with('error', 'Your account is not approved yet.');
+        }
 
         Session::put('driver_id', $driver->id);
         Session::put('driver_name', $driver->fname . ' ' . $driver->lname);

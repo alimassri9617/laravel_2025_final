@@ -19,6 +19,11 @@
             </div>
         </div>
     </nav>
+    {{@if session('success')}}
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -116,45 +121,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 <script>
-    const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
-        cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
-        encrypted: true
-    });
-
-    // Initialize Axios
-    window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
-    document.getElementById('chatForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        formData.append('sender_type', 'client');
-        
-        axios.post('/messages', formData)
-            .then(response => {
-                this.reset();
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    });
-
-    // Subscribe to channel
-    const channel = pusher.subscribe('delivery-chat.{{ $delivery->id }}');
-    channel.bind('new-message', function(data,e) {
-        e.preventDefault();
-        const messageHtml = `
-            <div class="message ${data.sender_type === 'client' ? 'text-end' : 'text-start'} mb-2">
-                <div class="card ${data.sender_type === 'client' ? 'bg-primary text-white' : 'bg-light'}">
-                    <div class="card-body p-2">
-                        <p class="mb-0">${data.message}</p>
-                        <small class="text-muted">${new Date(data.created_at).toLocaleTimeString()}</small>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.getElementById('chatMessages').innerHTML += messageHtml;
-    });
-</script>
+   
 </body>
 </html>

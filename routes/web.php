@@ -67,7 +67,8 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/login', [ClientController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [ClientController::class, 'login']);
     Route::get('/logout', [ClientController::class, 'logout'])->name('logout');
-
+    Route::get("register", [ClientController::class, 'showRegistrationForm'])->name('register');
+    Route::post("/register",[ClientController::class,"register"]);
     // Protected routes
     Route::get('/dashboard', [ClientController::class, 'dashboard'])->name('dashboard');
     Route::get('/deliveries', [ClientController::class, 'deliveries'])->name('deliveries');
