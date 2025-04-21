@@ -19,8 +19,9 @@
             </div>
         </div>
     </nav>
-    {{@if session('success')}}
-        <div class="alert alert-success">
+
+    @if (session('success'))
+        <div class="alert alert-success text-center m-3">
             {{ session('success') }}
         </div>
     @endif
@@ -50,77 +51,85 @@
                                     <th>Destination</th>
                                     <th>Status</th>
                                     <th>Actions</th>
+                                    <th>Chat</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($deliveries as $delivery)
-                                <tr>
-                                    <td>#{{ $delivery->id }}</td>
-                                    <td>{{ $delivery->pickup_location }}</td>
-                                    <td>{{ $delivery->destination }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ 
-                                            $delivery->status == 'completed' ? 'success' : 
-                                            ($delivery->status == 'pending' ? 'warning' : 'primary')
-                                        }}">
-                                            {{ ucfirst($delivery->status) }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('client.deliveries.show', $delivery->id) }}" 
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
-                                    </td>
-                                   <td>
-                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#chatModal">
-                                        <i class="fas fa-comments"></i> Chat with Driver
-                                    </button>
-                                    
-                                    <!-- Chat Modal -->
-                                    <div class="modal fade" id="chatModal" tabindex="-1">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Chat</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div id="chatMessages" style="height: 400px; overflow-y: auto; margin-bottom: 20px;">
-                                                        <!-- Messages will be loaded here -->
-                                                    </div>
-                                                    <form id="chatForm" action="{{ route('client.chat.store') }}" method="POST"></form>
-                                                        
-                                                        @csrf
-                                                        <input type="hidden" name="sender_type" value="client">
-                                                        <input type="hidden" name="delivery_id" value="{{ $delivery->id }}">
-                                                        <input type="hidden" name="sender_id" value="{{ $delivery->driver_id }}">
-                                                        <div class="input-group">
-                                                            <textarea class="form-control" name="message" placeholder="Type your message"></textarea>
-                                                            <button type="submit" class="btn btn-primary">
-                                                                <i class="fas fa-paper-plane"></i>
-                                                            </button>
+                                    <tr>
+                                        <td>#{{ $delivery->id }}</td>
+                                        <td>{{ $delivery->pickup_location }}</td>
+                                        <td>{{ $delivery->destination }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 
+                                                $delivery->status == 'completed' ? 'success' : 
+                                                ($delivery->status == 'pending' ? 'warning' : 'primary')
+                                            }}">
+                                                {{ ucfirst($delivery->status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('client.deliveries.show', $delivery->id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#chatModal-{{ $delivery->id }}">
+                                                <i class="fas fa-comments"></i> Chat with Driver
+                                            </button>
+
+                                            <!-- Chat Modal -->
+                                            <div class="modal fade" id="chatModal-{{ $delivery->id }}" tabindex="-1" aria-labelledby="chatModalLabel-{{ $delivery->id }}" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="chatModalLabel-{{ $delivery->id }}">Chat with Driver</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
-                                                    </form>
+                                                        <div class="modal-body">
+                                                            <div id="chatMessages-{{ $delivery->id }}" style="height: 400px; overflow-y: auto; margin-bottom: 20px;">
+                                                                <!-- Messages will be loaded here -->
+                                                            </div>
+                                                            <form id="chatForm-{{ $delivery->id }}" action="{{ route('client.chat.store') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="sender_type" value="client">
+                                                                <input type="hidden" name="delivery_id" value="{{ $delivery->id }}">
+                                                                <input type="hidden" name="sender_id" value="{{ $delivery->driver_id }}">
+                                                                <div class="input-group">
+                                                                    <textarea class="form-control" name="message" placeholder="Type your message" required></textarea>
+                                                                    <button type="submit" class="btn btn-primary">
+                                                                        <i class="fas fa-paper-plane"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                   </td>
-                                </tr>
-                                
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                       
                     </div>
                 @endif
             </div>
         </div>
     </div>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
-<script>
-   //test
+    <script>
+        // Optional: Auto-scroll chat to bottom on modal open
+        document.addEventListener('shown.bs.modal', function (event) {
+            const modal = event.target;
+            const chatBox = modal.querySelector('[id^="chatMessages"]');
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+    </script>
 </body>
 </html>
