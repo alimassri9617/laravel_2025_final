@@ -73,39 +73,9 @@
                                         </a>
                                     </td>
                                    <td>
-                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#chatModal">
+                                    <a href="{{ route('client.chat.show', $delivery->id) }}" class="btn btn-success">
                                         <i class="fas fa-comments"></i> Chat with Driver
-                                    </button>
-                                    
-                                    <!-- Chat Modal -->
-                                    <div class="modal fade" id="chatModal" tabindex="-1">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Chat</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div id="chatMessages" style="height: 400px; overflow-y: auto; margin-bottom: 20px;">
-                                                        <!-- Messages will be loaded here -->
-                                                    </div>
-                                                    <form id="chatForm" action="{{ route('client.chat.store') }}" method="POST"></form>
-                                                        
-                                                        @csrf
-                                                        <input type="hidden" name="sender_type" value="client">
-                                                        <input type="hidden" name="delivery_id" value="{{ $delivery->id }}">
-                                                        <input type="hidden" name="sender_id" value="{{ $delivery->driver_id }}">
-                                                        <div class="input-group">
-                                                            <textarea class="form-control" name="message" placeholder="Type your message"></textarea>
-                                                            <button type="submit" class="btn btn-primary">
-                                                                <i class="fas fa-paper-plane"></i>
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    </a>
                                    </td>
                                 </tr>
                                 

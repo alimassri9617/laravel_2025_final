@@ -36,4 +36,9 @@ class Driver extends Model
     {
         return $this->hasMany(Delivery::class);
     }
+
+    public function messages()
+    {
+        return $this->morphMany(Message::class, 'sender');
+    }
 }

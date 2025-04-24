@@ -38,6 +38,9 @@ class Delivery extends Model
     return $this->belongsTo(Driver::class);
 }
 
-
+    public function messages()
+    {
+        return $this->hasMany(\App\Models\Message::class);
+    }
 }
 

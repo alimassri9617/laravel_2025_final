@@ -182,4 +182,26 @@ class ClientController extends Controller
 
         return $basePrices[$packageType] * $multipliers[$deliveryType];
     }
+
+    public function chat(Delivery $delivery)
+    {
+        if (!session()->has('client_id')) {
+            return redirect()->route('client.login');
+        }
+
+        // Check if the delivery belongs to the logged-in client
+        if ($delivery->client_id !== session('client_id')) {
+            abort(403, 'Unauthorized access');
+        }
+
+        // Reload driver relationship to ensure it exists
+        $driver = $delivery->driver()->first();
+        if (!$driver) {
+            return redirect()->route('client.dashboard')->with('error', 'Driver not assigned for this delivery or driver record missing.');
+        }
+
+        $messages = $delivery->messages()->orderBy('created_at')->get();
+
+        return view('chat.show', compact('delivery', 'driver', 'messages'));
+    }
 }

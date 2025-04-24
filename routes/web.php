@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Broadcast;
+
+Broadcast::routes(['middleware' => ['web', 'auth:client']]);
+Broadcast::routes(['middleware' => ['web', 'auth:driver']]);
+
 use App\Http\Controllers\Reg;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DriverController;
@@ -75,6 +80,7 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/deliveries/create', [ClientController::class, 'createDelivery'])->name('deliveries.create');
     Route::post('/deliveries', [ClientController::class, 'storeDelivery'])->name('deliveries.store');
     Route::get('/deliveries/{id}', [ClientController::class, 'showDelivery'])->name('deliveries.show');
+    Route::get('/chat/{delivery}', [ClientController::class, 'chat'])->name('chat.show');
     Route::get('/login/google', [SocialLoginController::class, 'redirectToGoogle']);
     Route::get('/login/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
     // Chat message storage
@@ -126,7 +132,8 @@ Route::prefix('driver')->name('driver.')->group(function() {
    // If you're using GET (as in your form)
 Route::get('/complete/{id}', [DriverController::class, 'markAsComplete'])->name('complete');
 
-
+    // Driver chat route
+    Route::get('/chat/{delivery}', [DriverController::class, 'chat'])->name('chat.show');
 });
 
 

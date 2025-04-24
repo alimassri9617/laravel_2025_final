@@ -22,7 +22,7 @@ class NewMessage implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new Channel('delivery-chat.' . $this->message->delivery_id);
+        return new \Illuminate\Broadcasting\PrivateChannel('private-delivery.' . $this->message->delivery_id);
     }
 
     public function broadcastWith()
