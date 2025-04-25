@@ -150,7 +150,7 @@ class Reg extends Controller
 
         Session::put('driver_registration_data', $driverData);
         Session::put('driver_registration_otp', $otp);
-
+ 
         // Send OTP email
         Mail::to($driverData['email'])->send(new OtpMail($otp));
 
