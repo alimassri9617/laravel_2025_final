@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Log;
 use App\Models\Client;
 use App\Models\Delivery;
 use Illuminate\Http\Request;
@@ -183,25 +183,37 @@ class ClientController extends Controller
         return $basePrices[$packageType] * $multipliers[$deliveryType];
     }
 
-    public function chat(Delivery $delivery)
-    {
-        if (!session()->has('client_id')) {
-            return redirect()->route('client.login');
-        }
-
-        // Check if the delivery belongs to the logged-in client
-        if ($delivery->client_id !== session('client_id')) {
-            abort(403, 'Unauthorized access');
-        }
-
-        // Reload driver relationship to ensure it exists
-        $driver = $delivery->driver()->first();
-        if (!$driver) {
-            return redirect()->route('client.dashboard')->with('error', 'Driver not assigned for this delivery or driver record missing.');
-        }
-
-        $messages = $delivery->messages()->orderBy('created_at')->get();
-
-        return view('chat.show', compact('delivery', 'driver', 'messages'));
+public function chat(Delivery $delivery)
+{
+       Log::info('Client ID in session: ' . session('client_id'));
+    
+    // Convert the parameter to a model if it's an ID
+    if (!$delivery instanceof \App\Models\Delivery) {
+        $delivery = \App\Models\Delivery::findOrFail($delivery);
     }
+    
+    // Make sure this client owns this delivery
+    if ($delivery->client_id != session('client_id')) {
+        abort(403, 'Unauthorized action.');
+    }
+    // Convert the parameter to a model if it's an ID
+    
+    // Make sure this client owns this delivery
+
+    
+    // Get the driver information
+    $driver = \App\Models\Driver::find($delivery->driver_id);
+    
+    // If no driver has been assigned yet
+    if (!$driver) {
+        return back()->with('error', 'No driver has been assigned to this delivery yet.');
+    }
+    
+    // Get all messages for this delivery
+    $messages = \App\Models\Message::where('delivery_id', $delivery->id)
+                                   ->orderBy('created_at')
+                                   ->get();
+    
+    return view('client.chat', compact('delivery', 'driver', 'messages'));
+}
 }

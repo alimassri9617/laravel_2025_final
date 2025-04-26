@@ -1,9 +1,11 @@
 <?php
-// app/Events/NewMessage.php
+
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -14,23 +16,23 @@ class NewMessage implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
+    public $sender_type;
+    public $sender_id;
+    public $delivery_id;
+    public $created_at;
 
     public function __construct(Message $message)
     {
-        $this->message = $message;
+        $this->message = $message->message;
+        $this->sender_type = $message->sender_type;
+        $this->sender_id = $message->sender_id;
+        $this->delivery_id = $message->delivery_id;
+        $this->created_at = $message->created_at;
     }
 
     public function broadcastOn()
     {
-        return new \Illuminate\Broadcasting\PrivateChannel('private-delivery.' . $this->message->delivery_id);
-    }
-
-    public function broadcastWith()
-    {
-        return [
-            'message' => $this->message->message,
-            'created_at' => $this->message->created_at,
-            'sender_type' => $this->message->sender_type
-        ];
+        
+         return new Channel('delivery.' . $this->delivery_id);
     }
 }

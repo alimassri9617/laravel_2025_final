@@ -69,47 +69,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
     <script>
-        // Scroll chat to bottom
-        const chatMessages = document.getElementById('chatMessages');
+    // Scroll chat to bottom
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Pusher setup for real-time updates
+    const pusher = new Pusher('{{ config("broadcasting.connections.pusher.key") }}', {
+        cluster: '{{ config("broadcasting.connections.pusher.options.cluster") }}',
+        encrypted: true
+    });
+
+    const channel = pusher.subscribe('private-delivery.{{ $delivery->id }}');
+    
+    channel.bind('App\\Events\\NewMessage', function(data) {
+        console.log('New message received:', data);
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', data.sender_type);
+        
+        const date = new Date(data.created_at);
+        const formattedDate = `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}, ${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}`;
+        
+        messageDiv.innerHTML = `<div class="text">${data.message}<br><small class="text-muted">${formattedDate}</small></div>`;
+        chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        // Pusher setup for real-time updates
-        Pusher.logToConsole = false;
-        var pusher = new Pusher('{{ env("PUSHER_APP_KEY") }}', {
-            cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
-            encrypted: true
-        });
-
-        var channel = pusher.subscribe('private-delivery-{{ $delivery->id }}');
-        channel.bind('App\\Events\\NewMessage', function(data) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', data.message.sender_type);
-            messageDiv.innerHTML = `<div class="text">${data.message.message}<br><small class="text-muted">${new Date(data.message.created_at).toLocaleString()}</small></div>`;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
-
-        // AJAX form submission for sending messages
-        const chatForm = document.getElementById('chatForm');
-        chatForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(chatForm);
-            fetch(chatForm.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': formData.get('_token'),
-                    'Accept': 'application/json',
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                chatForm.message.value = '';
-            })
-            .catch(error => {
-                alert('Error sending message');
-                console.error(error);
-            });
-        });
+    });
+</script>
     </script>
 </body>

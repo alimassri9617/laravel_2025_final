@@ -297,21 +297,26 @@ class DriverController extends Controller
     return redirect()->back()->with('success', 'Delivery marked as complete!');
     }
 
-    public function chat(Delivery $delivery)
-    {
-        $driverId = Session::get('driver_id');
-        $driver = Driver::findOrFail($driverId);
-
-        // Authorization: ensure driver is assigned to this delivery
-        if ($delivery->driver_id !== $driver->id) {
-            abort(403, 'Unauthorized access to this chat.');
-        }
-
-        // Load messages for this delivery
-        $messages = \App\Models\Message::where('delivery_id', $delivery->id)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return view('driver.chat.show', compact('driver', 'delivery', 'messages'));
+    public function chat($delivery)
+{
+    // Convert the parameter to a model if it's an ID
+    if (!$delivery instanceof \App\Models\Delivery) {
+        $delivery = \App\Models\Delivery::findOrFail($delivery);
     }
+    
+    // Make sure this driver is assigned to this delivery
+    if ($delivery->driver_id != session('driver_id')) {
+        abort(403, 'Unauthorized action.');
+    }
+    
+    // Get the client information
+    $client = \App\Models\Client::find($delivery->client_id);
+    
+    // Get all messages for this delivery
+    $messages = \App\Models\Message::where('delivery_id', $delivery->id)
+                                   ->orderBy('created_at')
+                                   ->get();
+    
+    return view('driver.chat', compact('delivery', 'client', 'messages'));
+}
 }

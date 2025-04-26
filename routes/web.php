@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::routes(['middleware' => ['web', 'auth:client']]);
-Broadcast::routes(['middleware' => ['web', 'auth:driver']]);
 
 use App\Http\Controllers\Reg;
 use App\Http\Controllers\ClientController;
@@ -87,31 +85,6 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::post('/chat', [MessageController::class, 'store'])->name('chat.store');
 });
 
-// Route::prefix('driver')->name('driver.')->group(function() {
-//     // Authentication
-//     Route::get('/login', [DriverController::class, 'showLoginForm'])->name('login');
-//     Route::post('/login', [DriverController::class, 'login']);
-//     Route::get('/register', [DriverController::class, 'showRegistrationForm'])->name('register');
-//     Route::post('/register', [DriverController::class, 'register']);
-//     Route::get('/logout', [DriverController::class, 'logout'])->name('logout');
-    
-//     // Protected routes
-//     Route::middleware(function ($request, $next) {
-//         if (!Session::has('driver_id')) {
-//             return redirect()->route('driver.login');
-//         }
-//         return $next($request);
-//     })->group(function() {
-//         Route::get('/dashboard', [DriverController::class, 'dashboard'])->name('dashboard');
-//         Route::get('/available-deliveries', [DriverController::class, 'availableDeliveries'])->name('available-deliveries');
-//         Route::post('/accept-delivery/{id}', [DriverController::class, 'acceptDelivery'])->name('accept-delivery');
-//         Route::post('/update-status/{id}', [DriverController::class, 'updateDeliveryStatus'])->name('update-status');
-//         Route::get('/earnings', [DriverController::class, 'earnings'])->name('earnings');
-//         Route::get('/profile', [DriverController::class, 'showProfile'])->name('profile');
-//         Route::post('/profile', [DriverController::class, 'updateProfile'])->name('profile.update');
-//     });
-// });
-
 
 Route::prefix('driver')->name('driver.')->group(function() {
     // Authentication
@@ -150,4 +123,12 @@ Route::prefix('admin')->group(function() {
     Route::post('/drivers/{driver}/approve', [AdminController::class, 'approveDriver'])->name('admin.drivers.approve');
     Route::post('/drivers/{driver}/delete', [AdminController::class, 'deleteDriver'])->name('admin.drivers.delete');
     Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+});
+
+Route::get('/test-session', function () {
+    return response()->json([
+        'client_id' => session('client_id'),
+        'driver_id' => session('driver_id'),
+        'session_data' => session()->all()
+    ]);
 });
