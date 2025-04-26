@@ -29,6 +29,13 @@ Route::get("/register",function(){
 Route::post('/register', [Reg::class, 'storeUser'])->name('register.store');
 Route::post('/register/driver', [Reg::class, 'storeDriver'])->name('register.storedriver');
 
+// OTP Verification Routes
+Route::get('/otp/verify', [Reg::class, 'showOtpForm'])->name('otp.verify.form');
+Route::post('/otp/verify', [Reg::class, 'verifyOtp'])->name('otp.verify.submit');
+
+// Gmail API OAuth callback route
+Route::get('/oauth2callback', [Reg::class, 'handleGmailOAuthCallback'])->name('gmail.oauth.callback');
+
 Route::get("/createClient",function (){
     $client = Client::create([
         'fname' => 'John',

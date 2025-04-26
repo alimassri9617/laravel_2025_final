@@ -1,13 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Delivery App - Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
+        .form-check-label {
+            margin-left: 5px;
+        }
+        .password-toggle {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .card {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .section-title {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
         .registration-type {
             cursor: pointer;
             transition: all 0.3s;
@@ -28,27 +48,17 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="index.html">DeliveryApp</a>
+            <a class="navbar-brand" href="{{ route('home') }}">DeliveryApp</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#how-it-works">How It Works</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{route('login')}}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light" href="{{route('register')}}">Register</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-outline-light" href="{{ route('register') }}">Register</a></li>
                 </ul>
             </div>
         </div>
@@ -91,49 +101,34 @@
                                 @csrf
                                 <h5 class="mb-4">Client Information</h5>
                                 <div class="row g-3">
-                                    <!-- First Name -->
                                     <div class="col-md-6">
                                         <label for="clientFirstName" class="form-label">First Name</label>
                                         <input name="fname" type="text" class="form-control" id="clientFirstName" placeholder="Enter your first name" required>
                                     </div>
-                            
-                                    <!-- Last Name -->
                                     <div class="col-md-6">
                                         <label for="clientLastName" class="form-label">Last Name</label>
                                         <input name="lname" type="text" class="form-control" id="clientLastName" placeholder="Enter your last name" required>
                                     </div>
-                            
-                                    <!-- Email -->
                                     <div class="col-md-6">
                                         <label for="clientEmail" class="form-label">Email Address</label>
                                         <input name="email" type="email" class="form-control" id="clientEmail" placeholder="Enter your email" required>
                                     </div>
-                            
-                                    <!-- Phone Number -->
                                     <div class="col-md-6">
                                         <label for="clientPhone" class="form-label">Phone Number</label>
                                         <input name="phone" type="tel" class="form-control" id="clientPhone" placeholder="Enter your phone number" required>
                                     </div>
-                            
-                                    <!-- Password -->
                                     <div class="col-md-6">
                                         <label for="clientPassword" class="form-label">Password</label>
                                         <input name="password" type="password" class="form-control" id="clientPassword" placeholder="Enter your password" required>
                                     </div>
-                            
-                                    <!-- Confirm Password -->
                                     <div class="col-md-6">
                                         <label for="clientConfirmPassword" class="form-label">Confirm Password</label>
                                         <input name="password_confirmation" type="password" class="form-control" id="clientConfirmPassword" placeholder="Confirm your password" required>
                                     </div>
-                            
-                                    <!-- Profile Picture -->
                                     <div class="col-md-6">
                                         <label for="clientProfilePicture" class="form-label">Profile Picture</label>
                                         <input name="image" type="file" class="form-control" id="clientProfilePicture" accept="image/*" required>
                                     </div>
-                            
-                                    <!-- Terms and Conditions -->
                                     <div class="col-12">
                                         <div class="form-check">
                                             <input name="terms" class="form-check-input" type="checkbox" id="clientTerms" required>
@@ -142,109 +137,137 @@
                                             </label>
                                         </div>
                                     </div>
-                            
-                                    <!-- Submit Button -->
                                     <div class="col-12 mt-3">
                                         <button type="submit" class="btn btn-primary w-100">Register as Client</button>
                                     </div>
                                 </div>
                             </form>
                             
-
                             <!-- Driver Registration Form -->
-                            <form id="driverForm" method="POST" enctype="multipart/form-data" action="{{ route('register.storedriver') }}">
+                            <form method="POST" action="{{ route('register.storedriver') }}" enctype="multipart/form-data" id="driverForm" style="display:none;">
                                 @csrf
-                                <h5 class="mb-4">Driver Information</h5>
-                                <div class="row g-3">
+                                
+                                <h5 class="section-title"><i class="fas fa-user me-2"></i>Personal Information</h5>
+                                <div class="row g-3 mb-4">
                                     <div class="col-md-6">
-                                        <label for="driverFirstName" class="form-label">First Name</label>
-                                        <input name="fname" type="text" class="form-control" id="driverFirstName" required>
+                                        <label for="fname" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="fname" name="fname" value="{{ old('fname') }}" required />
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="driverLastName" class="form-label">Last Name</label>
-                                        <input name="lname" type="text" class="form-control" id="driverLastName" required>
+                                        <label for="lname" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lname" name="lname" value="{{ old('lname') }}" required />
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="driverEmail" class="form-label">Email Address</label>
-                                        <input name="email" type="email" class="form-control" id="driverEmail" required>
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required />
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="driverPhone" class="form-label">Phone Number</label>
-                                        <input name="phone" type="tel" class="form-control" id="driverPhone" required>
+                                        <label for="phone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" required />
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="driverPassword" class="form-label">Password</label>
-                                        <input name="password" type="password" class="form-control" id="driverPassword" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="driverConfirmPassword" class="form-label">Confirm Password</label>
-                                        <input name="password_confirmation" type="password" class="form-control" id="driverConfirmPassword" required>
-                                    </div>
-                                    
-                                    <!-- Driver Specific Fields -->
-                                    <div class="col-md-6">
-                                        <label for="driverVehicleType" class="form-label">Vehicle Type</label>
-                                        <select name="vicheltype" class="form-select" id="driverVehicleType" required>
-                                            <option value="">Select Vehicle</option>
-                                            <option value="motorcycle">Motorcycle</option>
-                                            <option value="car">Car</option>
-                                            <option value="van">Van</option>
-                                            <option value="truck">Truck</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="driverPlateNumber" class="form-label">Plate Number</label>
-                                        <input name="platenumber" type="text" class="form-control" id="driverPlateNumber" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="driverLicenseNumber" class="form-label">Driver License Number</label>
-                                        <input name="driverlicense" type="text" class="form-control" id="driverLicenseNumber" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="driverPricingModel" class="form-label">Pricing Model</label>
-                                        <select name="pricemodel" class="form-select" id="driverPricingModel" required>
-                                            <option value="">Select Pricing</option>
-                                            <option value="fixed">Fixed Price per Delivery</option>
-                                            <option value="per_km">Per Kilometer</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="driverWorkArea" class="form-label">Working Area</label>
-                                        <select name="work_area" class="form-select" id="driverWorkArea">
-                                            <option value="baalbek" selected>Baalbek</option>
-                                            <option value="beirut">Beirut</option>
-                                            <option value="tripoli">Tripoli</option>
-                                            <option value="saida">Saida</option>
-                                            <option value="tyre">Tyre</option>
-                                            <option value="jounieh">Jounieh</option>
-                                            <option value="zahle">Zahle</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="form-check">
-                                            <input name="terms" class="form-check-input" type="checkbox" id="driverTerms" required>
-                                            <label class="form-check-label" for="driverTerms">
-                                                I agree to the <a href="#">Terms and Conditions</a>
-                                            </label>
+                                        <label for="password" class="form-label">Password</label>
+                                        <div class="password-wrapper">
+                                            <input type="password" class="form-control" id="password" name="password" required minlength="8" />
+                                            <i class="far fa-eye password-toggle" onclick="togglePassword('password')"></i>
                                         </div>
-                                        <div class="form-check">
-                                            <input name="background_check" class="form-check-input" type="checkbox" id="driverBackgroundCheck" required>
-                                            <label class="form-check-label" for="driverBackgroundCheck">
-                                                I consent to a background check
-                                            </label>
+                                        <small class="text-muted">Minimum 8 characters</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="password_confirmation" class="form-label">Confirm Password</label>
+                                        <div class="password-wrapper">
+                                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required />
+                                            <i class="far fa-eye password-toggle" onclick="togglePassword('password_confirmation')"></i>
                                         </div>
                                     </div>
+                                </div>
+
+                                <h5 class="section-title"><i class="fas fa-car me-2"></i>Vehicle Information</h5>
+                                <div class="row g-3 mb-4">
                                     <div class="col-md-6">
-                                        <label for="driverProfilePicture" class="form-label">Profile Picture</label>
-                                        <input name="image" type="file" class="form-control" id="driverProfilePicture" accept="image/*" required>
+                                        <label for="vehicle_type" class="form-label">Vehicle Type</label>
+                                        <select class="form-select" id="vehicle_type" name="vehicle_type" required>
+                                            <option value="">Select Vehicle Type</option>
+                                            <option value="car" {{ old('vehicle_type') == 'car' ? 'selected' : '' }}>Car</option>
+                                            <option value="motorcycle" {{ old('vehicle_type') == 'motorcycle' ? 'selected' : '' }}>Motorcycle</option>
+                                            <option value="van" {{ old('vehicle_type') == 'van' ? 'selected' : '' }}>Van</option>
+                                            <option value="truck" {{ old('vehicle_type') == 'truck' ? 'selected' : '' }}>Truck</option>
+                                        </select>
                                     </div>
-                                    <div class="col-12 mt-3">
-                                        <button type="submit" class="btn btn-primary w-100">Register as Driver</button>
+                                    <div class="col-md-6">
+                                        <label for="plate_number" class="form-label">Plate Number</label>
+                                        <input type="text" class="form-control" id="plate_number" name="plate_number" value="{{ old('plate_number') }}" required />
                                     </div>
+                                    <div class="col-md-6">
+                                        <label for="driver_license" class="form-label">Driver License Number</label>
+                                        <input type="text" class="form-control" id="driver_license" name="driver_license" value="{{ old('driver_license') }}" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="price_model" class="form-label">Pricing Model</label>
+                                        <select class="form-select" id="price_model" name="price_model" required>
+                                            <option value="">Select Pricing Model</option>
+                                            <option value="fixed" {{ old('price_model') == 'fixed' ? 'selected' : '' }}>Fixed Price</option>
+                                            <option value="per_km" {{ old('price_model') == 'per_km' ? 'selected' : '' }}>Per Kilometer</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <h5 class="section-title"><i class="fas fa-map-marker-alt me-2"></i>Working Areas</h5>
+                                <div class="mb-4">
+                                    <p>Select areas where you're willing to work:</p>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="area_beirut" name="work_area[]" value="Beirut" {{ in_array('Beirut', old('work_area', [])) ? 'checked' : '' }} />
+                                                <label class="form-check-label" for="area_beirut">Beirut</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="area_tripoli" name="work_area[]" value="Tripoli" {{ in_array('Tripoli', old('work_area', [])) ? 'checked' : '' }} />
+                                                <label class="form-check-label" for="area_tripoli">Tripoli</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="area_saida" name="work_area[]" value="Saida" {{ in_array('Saida', old('work_area', [])) ? 'checked' : '' }} />
+                                                <label class="form-check-label" for="area_saida">Saida</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="area_tyre" name="work_area[]" value="Tyre" {{ in_array('Tyre', old('work_area', [])) ? 'checked' : '' }} />
+                                                <label class="form-check-label" for="area_tyre">Tyre</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="area_jounieh" name="work_area[]" value="Jounieh" {{ in_array('Jounieh', old('work_area', [])) ? 'checked' : '' }} />
+                                                <label class="form-check-label" for="area_jounieh">Jounieh</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="area_zahle" name="work_area[]" value="Zahle" {{ in_array('Zahle', old('work_area', [])) ? 'checked' : '' }} />
+                                                <label class="form-check-label" for="area_zahle">Zahle</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="image" class="form-label">Profile Picture</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*" />
+                                    <small class="text-muted">Max 2MB (JPEG, PNG, JPG)</small>
+                                </div>
+
+                                <div class="form-check mb-4">
+                                    <input type="checkbox" class="form-check-input" id="terms" name="terms" required />
+                                    <label class="form-check-label" for="terms">I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a></label>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-user-plus me-2"></i>Register
+                                    </button>
                                 </div>
                             </form>
 
-                            <hr class="my-4">
+                            <hr class="my-4" />
                             <div class="text-center">
                                 <p class="mb-0">Already have an account? <a href="{{route('login')}}" class="text-primary">Login</a></p>
                             </div>
@@ -269,8 +292,19 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/script.js"></script>
     <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = field.parentElement.querySelector('.password-toggle');
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle between client and driver registration forms
             const clientType = document.getElementById('clientType');
@@ -295,54 +329,6 @@
                 clientForm.style.display = 'none';
                 driverRadio.checked = true;
             });
-
-            // Form validation for client registration
-            const clientRegisterForm = document.getElementById('clientForm');
-            if (clientRegisterForm) {
-                clientRegisterForm.addEventListener('submit', function(e) {
-                    const password = document.getElementById('clientPassword').value;
-                    const confirmPassword = document.getElementById('clientConfirmPassword').value;
-                    
-                    if (password !== confirmPassword) {
-                        alert('Passwords do not match');
-                        e.preventDefault();
-                        return;
-                    }
-                    
-                    if (!document.getElementById('clientTerms').checked) {
-                        alert('You must agree to the terms and conditions');
-                        e.preventDefault();
-                        return;
-                    }
-                });
-            }
-
-            // Form validation for driver registration
-            const driverRegisterForm = document.getElementById('driverForm');
-            if (driverRegisterForm) {
-                driverRegisterForm.addEventListener('submit', function(e) {
-                    const password = document.getElementById('driverPassword').value;
-                    const confirmPassword = document.getElementById('driverConfirmPassword').value;
-                    
-                    if (password !== confirmPassword) {
-                        alert('Passwords do not match');
-                        e.preventDefault();
-                        return;
-                    }
-                    
-                    if (!document.getElementById('driverTerms').checked) {
-                        alert('You must agree to the terms and conditions');
-                        e.preventDefault();
-                        return;
-                    }
-                    
-                    if (!document.getElementById('driverBackgroundCheck').checked) {
-                        alert('You must consent to a background check');
-                        e.preventDefault();
-                        return;
-                    }
-                });
-            }
         });
     </script>
 </body>
