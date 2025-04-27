@@ -1,18 +1,19 @@
-import axios from 'axios';
-window.axios = axios;
-
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+import Echo from "laravel-echo";
+window.Pusher = Pusher;
 
 window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: process.env.MIX_PUSHER_APP_KEY,
-    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-    // ← this matches the registered Laravel route
-    authEndpoint: '/broadcasting/auth',
+    broadcaster: "pusher",
+    key: '{{ config("broadcasting.connections.pusher.key") }}',
+    cluster: '{{ config("broadcasting.connections.pusher.options.cluster") }}',
+    forceTLS: true,
     auth: {
-      headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-      },
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
+                .content,
+        },
     },
-  });
-  
+    authTransport: "ajax",
+    authTransportOptions: {
+        fetchOptions: { credentials: "include" },
+    },
+});

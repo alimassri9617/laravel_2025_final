@@ -41,10 +41,7 @@ return [
     ],
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Client::class,
-        ],
+        
 
         'clients' => [
             'driver' => 'eloquent',

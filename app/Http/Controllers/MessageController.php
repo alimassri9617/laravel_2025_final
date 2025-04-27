@@ -1,5 +1,5 @@
 <?php
-// app/Http/Controllers/MessageController.php
+
 namespace App\Http\Controllers;
 
 use App\Models\Message;
@@ -10,20 +10,34 @@ class MessageController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
+            'message' => 'required|string',
+            'sender_type' => 'required|in:client,driver',
+            'sender_id' => 'required|integer',
             'delivery_id' => 'required|exists:deliveries,id',
-            'message' => 'required|string|max:1000'
         ]);
 
-        $message = Message::create([
-            'delivery_id' => $request->delivery_id,
-            'sender_id' => $request->sender_id,
-            'sender_type' => $request->sender_type,
-            'message' => $request->message
-        ]);
+        // Verify that the sender has permission to send messages for this delivery
+        $delivery = \App\Models\Delivery::find($request->delivery_id);
+        
+        if (!$delivery) {
+            return response()->json(['error' => 'Delivery not found'], 404);
+        }
+        
+        if ($request->sender_type == 'client' && $delivery->client_id != $request->sender_id) {
+            return response()->json(['error' => 'Unauthorized client  '], 403);
+        }
+        
+        if ($request->sender_type == 'driver' && $delivery->driver_id != $request->sender_id) {
+            return response()->json(['error' => 'Unauthorized driver'], 403);
+        }
 
-        broadcast(new NewMessage($message))->toOthers();
-
-        return response()->json($message);
+        // Create the message
+        $message = Message::create($validated);
+        
+        // Broadcast the event
+        event(new NewMessage($message));
+        
+        return response()->json(['success' => true, 'message' => $message]);
     }
 }

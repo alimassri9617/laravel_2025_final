@@ -14,7 +14,7 @@ class ClientSeeder extends Seeder
         $client = Client::create([
             'fname' => 'John',
             'lname' => 'Doe',
-            'email' => 'client@example.com',
+            'email' => 'cli@example.com',
             'phone' => '1234567890',
             'password' => 'password123' // In production, use Hash::make()
         ]);
