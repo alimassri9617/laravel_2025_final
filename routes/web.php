@@ -120,7 +120,7 @@ Route::get('/complete/{id}', [DriverController::class, 'markAsComplete'])->name(
 });
 
 
-
+ 
 use App\Http\Controllers\AdminController;
 // Admin Login Routes
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
