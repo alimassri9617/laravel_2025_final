@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+
 use Illuminate\Support\Facades\Broadcast;
 
 
@@ -90,6 +92,7 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/login/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
     // Chat message storage
     Route::post('/chat', [MessageController::class, 'store'])->name('chat.store');
+    Route::post('/deliveries/{delivery}/review', [ClientController::class, 'submitReview'])->name('client.review.submit');
 });
 
 
