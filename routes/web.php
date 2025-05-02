@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\DriverController;
 
 Route::post('/driver/fcm-token', [DriverController::class, 'saveFcmToken']);
@@ -10,6 +11,7 @@ Route::get('/debug/drivers-fcm-tokens', function () {
     $drivers = \App\Models\Driver::select('id', 'fname', 'lname', 'fcm_token')->get();
     return response()->json($drivers);
 });
+
 use Illuminate\Support\Facades\Broadcast;
 
 
@@ -98,6 +100,7 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/login/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
     // Chat message storage
     Route::post('/chat', [MessageController::class, 'store'])->name('chat.store');
+    Route::post('/deliveries/{delivery}/review', [ClientController::class, 'submitReview'])->name('client.review.submit');
 });
 
 
@@ -125,7 +128,7 @@ Route::get('/complete/{id}', [DriverController::class, 'markAsComplete'])->name(
 });
 
 
-
+ 
 use App\Http\Controllers\AdminController;
 // Admin Login Routes
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
