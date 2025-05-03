@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Driver extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'fname',
@@ -21,7 +22,7 @@ class Driver extends Model
         'price_model',
         'work_area',
         'image',
-        
+        'fcm_token',
         'approved'
     ];
 
@@ -51,4 +52,10 @@ class Driver extends Model
     {
         return $this->reviews()->avg('rating');
     }
+
+    public function routeNotificationForFcm()
+{
+    return $this->fcm_token;
+}
+
 }

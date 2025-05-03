@@ -6,11 +6,44 @@ use App\Models\Driver;
 use App\Models\Delivery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use App\Services\FcmServiceV1;
+use App\Notifications\DeliveryAssignedNotification;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Support\Str;
 
 class DriverController extends Controller
 {
+   
+    protected $fcmService;
+
+    public function __construct(FcmServiceV1 $fcmService)
+    {
+        $this->fcmService = $fcmService;
+    }
+
+    // Save or update FCM token for the driver
+    public function saveFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $driverId = Session::get('driver_id');
+        if (!$driverId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $driver = Driver::find($driverId);
+        if (!$driver) {
+            return response()->json(['error' => 'Driver not found'], 404);
+        }
+
+        $driver->fcm_token = $request->fcm_token;
+        $driver->save();
+
+        return response()->json(['message' => 'FCM token saved successfully']);
+    }
     // Show registration form
     public function showRegistrationForm()
     {
@@ -107,7 +140,7 @@ class DriverController extends Controller
     }
 
     // Dashboard
-   public function dashboard()
+    public function dashboard()
 {
     if ($redirect = $this->checkDriverSession()) {
         return $redirect;
@@ -118,10 +151,16 @@ class DriverController extends Controller
     $deliveries = Delivery::where('driver_id', $driverId)
                         ->orderBy('created_at', 'desc')
                         ->get();
+
+    $notifications = \App\Models\DriverNotification::where('driver_id', $driverId)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
     // Get the total number of deliveries
     return view('driver.dashboard', [
         'driver' => $driver,
-        'deliveries' => $deliveries
+        'deliveries' => $deliveries,
+        'notifications' => $notifications,
     ]);
 }
 
@@ -191,6 +230,34 @@ class DriverController extends Controller
 
         return back()->with('success', 'Delivery rejected successfully.');
     }
+
+    $delivery->update([
+        'driver_id' => $driverId,
+        'status' => 'accepted'
+    ]);
+
+    // Save notification in database
+    \App\Models\DriverNotification::create([
+        'driver_id' => $driverId,
+        'title' => 'New Delivery Assigned',
+        'body' => 'You have been assigned a new delivery request. Please check your dashboard.',
+        'read' => false,
+    ]);
+
+    // Send push notification to driver
+    $driver = Driver::find($driverId);
+    if ($driver && $driver->fcm_token) {
+        $title = 'New Delivery Assigned';
+        $body = 'You have been assigned a new delivery request. Please check your dashboard.';
+        $data = [
+            'delivery_id' => (string)$delivery->id,
+            'status' => $delivery->status,
+        ];
+        $this->fcmService->sendNotification($driver->fcm_token, $title, $body, $data);
+    }
+
+    return back()->with('success', 'Delivery accepted successfully!');
+}
 
     // Update delivery status
     public function updateDeliveryStatus(Request $request, $id)
