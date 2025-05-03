@@ -42,5 +42,10 @@ class Delivery extends Model
     {
         return $this->hasMany(\App\Models\Message::class);
     }
+
+    public function review()
+    {
+        return $this->hasOne(\App\Models\Review::class);
+    }
 }
 

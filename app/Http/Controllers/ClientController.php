@@ -79,10 +79,58 @@ class ClientController extends Controller
         $clientId = Session::get('client_id');
         $deliveries = Delivery::where('client_id', $clientId)->get();
 
+        // Get delivery IDs that have reviews
+        $reviewedDeliveryIds = \App\Models\Review::where('client_id', $clientId)
+            ->pluck('delivery_id')
+            ->toArray();
+
         return view('client.dashboard', [
             'clientName' => Session::get('client_name'),
-            'deliveries' => $deliveries
+            'deliveries' => $deliveries,
+            'reviewedDeliveryIds' => $reviewedDeliveryIds
         ]);
+    }
+
+    // New method to handle review submission
+    public function submitReview(Request $request, $deliveryId)
+    {
+        if (!Session::has('client_id')) {
+            return redirect()->route('client.login');
+        }
+
+        $clientId = Session::get('client_id');
+
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:1000'
+        ]);
+
+        $delivery = Delivery::findOrFail($deliveryId);
+
+        // Check if delivery belongs to client and is completed
+        if ($delivery->client_id != $clientId || $delivery->status != 'completed') {
+            return back()->with('error', 'Invalid delivery for review.');
+        }
+
+        // Check if review already exists
+        $existingReview = \App\Models\Review::where('delivery_id', $deliveryId)
+            ->where('client_id', $clientId)
+            ->first();
+
+        if ($existingReview) {
+            return back()->with('error', 'You have already reviewed this delivery.');
+        }
+
+        // Create review
+        \App\Models\Review::create([
+            'delivery_id' => $deliveryId,
+            'client_id' => $clientId,
+            'driver_id' => $delivery->driver_id,
+            'rating' => $request->rating,
+            'comment' => $request->comment
+        ]);
+
+        return back()->with('success', 'Review submitted successfully!');
     }
 
     // Show all deliveries

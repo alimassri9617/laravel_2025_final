@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Driver Dashboard</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -102,62 +103,156 @@
                     <h5 class="mb-0">Recent Deliveries</h5>
                 </div>
                 <div class="card-body">
-                    @if($deliveries->isEmpty())
-                        <div class="alert alert-info">No deliveries found</div>
-                    @else
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Pickup</th>
-                                        <th>Destination</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>completed</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($deliveries as $delivery)
-                                    <tr>
-                                        <td>#{{ $delivery->id }}</td>
-                                        <td>{{ $delivery->pickup_location }}</td>
-                                        <td>{{ $delivery->destination }}</td>
-                                        <td>${{ number_format($delivery->amount, 2) }}</td>
-                                        <td>
-                                            <span class="badge badge-status bg-{{ 
-                                                $delivery->status == 'completed' ? 'success' : 
-                                                ($delivery->status == 'pending' ? 'warning' : 'primary')
-                                            }}">
-                                                {{ ucfirst(str_replace('_', ' ', $delivery->status)) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            
-                                            <form action="{{ route('driver.complete', $delivery->id) }}" method="GET">
-                                                
-                                               
-                                                @if($delivery->status == 'completed')
-                                                    <span class="badge bg-success">Yes</span>
-                                                    <button type="submit" class="btn btn-secondary btn-sm mt-2" disabled>Completed</button>
-                                                @else
-                                                    <span class="badge bg-danger">No</span>
-                                                    <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
-                                                @endif
-                                            </form>
-                                            
-                                            
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
+            @if($deliveries->isEmpty())
+                <div class="alert alert-info">No deliveries found</div>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Pickup</th>
+                                <th>Destination</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>completed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($deliveries as $delivery)
+                            <tr>
+                                <td>#{{ $delivery->id }}</td>
+                                <td>{{ $delivery->pickup_location }}</td>
+                                <td>{{ $delivery->destination }}</td>
+                                <td>${{ number_format($delivery->amount, 2) }}</td>
+                                <td>
+                                    <span class="badge badge-status bg-{{ 
+                                        $delivery->status == 'completed' ? 'success' : 
+                                        ($delivery->status == 'pending' ? 'warning' : 'primary')
+                                    }}">
+                                        {{ ucfirst(str_replace('_', ' ', $delivery->status)) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    
+                                    <form action="{{ route('driver.complete', $delivery->id) }}" method="GET">
+                                        
+                                       
+                                        @if($delivery->status == 'completed')
+                                            <span class="badge bg-success">Yes</span>
+                                            <button type="submit" class="btn btn-secondary btn-sm mt-2" disabled>Completed</button>
+                                        @else
+                                            <span class="badge bg-danger">No</span>
+                                            <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
+                                        @endif
+                                    </form>
+                                    
+                                    
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
+            <!-- Notifications Section -->
+            <div class="mt-4">
+                <h4>Notifications</h4>
+                @if($notifications->isEmpty())
+                    <p>No notifications</p>
+                @else
+                    <ul class="list-group">
+                        @foreach($notifications as $notification)
+                            <li class="list-group-item {{ $notification->read ? 'list-group-item-secondary' : '' }}">
+                                <strong>{{ $notification->title }}</strong><br>
+                                {{ $notification->body }}<br>
+                                <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCeExqfPBn-waAHIdGVs1fc7rnVhRvTxTM",
+            authDomain: "drivenotify-668ec.firebaseapp.com",
+            projectId: "drivenotify-668ec",
+            storageBucket: "drivenotify-668ec.firebasestorage.app",
+            messagingSenderId: "533476272756",
+            appId: "1:533476272756:web:1c1eec250528517ab0bf21",
+            measurementId: "G-NTBP5WD0WV"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const messaging = firebase.messaging();
+
+        function getTokenAndSend() {
+            console.log('Checking notification permission:', Notification.permission);
+            messaging.getToken({ vapidKey: 'BJFtevmdLx8OIxfx2wIdqDKSdEDQq5B6Ol6w1ouqavGLvBdk_4nC603tyjkfY8mD1M2pFIm_0zTuAwaE2wzxhzg' }).then((currentToken) => {
+                if (currentToken) {
+                    console.log('FCM Token:', currentToken);
+                    // Send token to backend to save
+                    console.log('Sending token to backend...');
+                    fetch('/driver/fcm-token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ fcm_token: currentToken })
+                    })
+                    .then(response => {
+                        console.log('Fetch response status:', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Token saved:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error saving token:', error);
+                    });
+                } else {
+                    console.log('No registration token available. Request permission to generate one.');
+                }
+            }).catch((err) => {
+                console.log('An error occurred while retrieving token. ', err);
+            });
+        }
+
+        if (Notification.permission === 'granted') {
+            getTokenAndSend();
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    getTokenAndSend();
+                } else {
+                    console.log('Notification permission denied');
+                }
+            });
+        } else {
+            console.log('Notification permission denied previously');
+        }
+
+        // Handle incoming messages while app is in foreground
+        messaging.onMessage(function(payload) {
+            console.log('Message received. ', payload);
+            alert(payload.notification.title + ": " + payload.notification.body);
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
