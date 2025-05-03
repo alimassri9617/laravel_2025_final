@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\GoogleAuthController;
 
 Route::post('/driver/fcm-token', [DriverController::class, 'saveFcmToken']);
 
@@ -25,6 +26,8 @@ use App\Http\Controllers\SocialLoginController;
 Route::get('/', function () {
     return view('index');
 })->name('home');
+
+Route::get('/google-authenticate', [GoogleAuthController::class, 'authenticate'])->name('google.authenticate');
 
 
 

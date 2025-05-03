@@ -177,59 +177,7 @@
                             </table>
                         </div>
                     @endif
-                <div class="card-body">
-            @if($deliveries->isEmpty())
-                <div class="alert alert-info">No deliveries found</div>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Pickup</th>
-                                <th>Destination</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>completed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($deliveries as $delivery)
-                            <tr>
-                                <td>#{{ $delivery->id }}</td>
-                                <td>{{ $delivery->pickup_location }}</td>
-                                <td>{{ $delivery->destination }}</td>
-                                <td>${{ number_format($delivery->amount, 2) }}</td>
-                                <td>
-                                    <span class="badge badge-status bg-{{ 
-                                        $delivery->status == 'completed' ? 'success' : 
-                                        ($delivery->status == 'pending' ? 'warning' : 'primary')
-                                    }}">
-                                        {{ ucfirst(str_replace('_', ' ', $delivery->status)) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    
-                                    <form action="{{ route('driver.complete', $delivery->id) }}" method="GET">
-                                        
-                                       
-                                        @if($delivery->status == 'completed')
-                                            <span class="badge bg-success">Yes</span>
-                                            <button type="submit" class="btn btn-secondary btn-sm mt-2" disabled>Completed</button>
-                                        @else
-                                            <span class="badge bg-danger">No</span>
-                                            <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
-                                        @endif
-                                    </form>
-                                    
-                                    
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
+                
 
             <!-- Notifications Section -->
             <div class="mt-4">
@@ -325,9 +273,30 @@
         // Handle incoming messages while app is in foreground
         messaging.onMessage(function(payload) {
             console.log('Message received. ', payload);
-            alert(payload.notification.title + ": " + payload.notification.body);
+
+            // Update toast content
+            document.getElementById('toastTitle').textContent = payload.notification.title;
+            document.getElementById('toastBody').textContent = payload.notification.body;
+
+            // Show the toast
+            var toastEl = document.getElementById('notificationToast');
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
         });
     </script>
+
+    <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                You have a new notification.
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

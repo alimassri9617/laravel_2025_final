@@ -16,6 +16,12 @@ class FcmServiceV1
     public function __construct()
     {
         $jsonKeyPath = storage_path('app/firebase-service-account.json');
+
+        if (!file_exists($jsonKeyPath)) {
+            Log::error('Firebase service account JSON key file not found at: ' . $jsonKeyPath);
+            throw new \Exception('Firebase service account JSON key file not found.');
+        }
+
         $this->credentials = new ServiceAccountCredentials(
             null,
             $jsonKeyPath,
@@ -70,7 +76,7 @@ class FcmServiceV1
 
             return json_decode($response->getBody(), true);
         } catch (\Exception $e) {
-            \Log::error('FCM sendNotification error: ' . $e->getMessage());
+            Log::error('FCM sendNotification error: ' . $e->getMessage());
             return null;
         }
     }

@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Log;
 use App\Models\Client;
 use App\Models\Delivery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-    use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Session;
+use App\Services\FcmServiceV1;
+use App\Models\DriverNotification;
 
 class ClientController extends Controller
 {
@@ -217,6 +220,30 @@ class ClientController extends Controller
         $delivery->status = 'pending';
         $delivery->amount = $this->calculateAmount($request->package_type, $request->delivery_type);
         $delivery->save();
+
+        // Notify the assigned driver
+        $fcmService = new FcmServiceV1();
+        $driver = \App\Models\Driver::find($delivery->driver_id);
+        if ($driver) {
+            // Save notification in database
+            DriverNotification::create([
+                'driver_id' => $driver->id,
+                'title' => 'New Delivery Assigned',
+                'body' => 'You have been assigned a new delivery request. Please check your dashboard.',
+                'read' => false,
+            ]);
+
+            // Send push notification
+            if ($driver->fcm_token) {
+                $title = 'New Delivery Assigned';
+                $body = 'You have been assigned a new delivery request. Please check your dashboard.';
+                $data = [
+                    'delivery_id' => (string)$delivery->id,
+                    'status' => $delivery->status,
+                ];
+                $fcmService->sendNotification($driver->fcm_token, $title, $body, $data);
+            }
+        }
 
         return redirect()->route('client.deliveries')->with('success', 'Delivery created successfully!');
     }

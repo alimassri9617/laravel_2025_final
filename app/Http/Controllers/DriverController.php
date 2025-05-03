@@ -206,6 +206,7 @@ class DriverController extends Controller
         ]);
 
         return back()->with('success', 'Delivery accepted successfully!');
+        
     }
 
     // Reject a delivery
@@ -230,34 +231,6 @@ class DriverController extends Controller
 
         return back()->with('success', 'Delivery rejected successfully.');
     }
-
-    $delivery->update([
-        'driver_id' => $driverId,
-        'status' => 'accepted'
-    ]);
-
-    // Save notification in database
-    \App\Models\DriverNotification::create([
-        'driver_id' => $driverId,
-        'title' => 'New Delivery Assigned',
-        'body' => 'You have been assigned a new delivery request. Please check your dashboard.',
-        'read' => false,
-    ]);
-
-    // Send push notification to driver
-    $driver = Driver::find($driverId);
-    if ($driver && $driver->fcm_token) {
-        $title = 'New Delivery Assigned';
-        $body = 'You have been assigned a new delivery request. Please check your dashboard.';
-        $data = [
-            'delivery_id' => (string)$delivery->id,
-            'status' => $delivery->status,
-        ];
-        $this->fcmService->sendNotification($driver->fcm_token, $title, $body, $data);
-    }
-
-    return back()->with('success', 'Delivery accepted successfully!');
-}
 
     // Update delivery status
     public function updateDeliveryStatus(Request $request, $id)
