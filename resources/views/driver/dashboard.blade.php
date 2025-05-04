@@ -165,6 +165,7 @@
                                                     @csrf
                                                     <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
                                                 </form>
+                                                <a href="{{ route('driver.chat.show', $delivery->id) }}" class="btn btn-info btn-sm mt-2 ms-2">Chat with Client</a>
                                             @else
                                                 <span class="badge bg-danger">No</span>
                                             @endif
