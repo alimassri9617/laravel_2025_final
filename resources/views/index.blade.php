@@ -50,7 +50,7 @@
                     <h1 class="display-4 fw-bold mb-4">Fast & Reliable Delivery Services</h1>
                     <p class="lead mb-4">Connect with trusted drivers for all your delivery needs. Real-time tracking, secure payments, and excellent service.</p>
                     <div class="d-flex gap-3">
-                        <a href={{ route('client.login') }} class="btn btn-primary btn-lg">Get Started</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Register</a>
                         <a href="#how-it-works" class="btn btn-outline-primary btn-lg">Learn More</a>
                     </div>
                 </div>

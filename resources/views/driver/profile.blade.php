@@ -31,7 +31,11 @@
                     <div class="card shadow-sm mb-4">
                         <div class="card-body text-center">
                             
-                            <img src="{{ asset('driver_images/' . $driver->image) }}" class="rounded-circle mb-3" width="150" height="150">
+                            @if($driver->image)
+                                <img src="{{ asset('storage/' . $driver->image) }}" class="rounded-circle mb-3" width="150" height="150" alt="Driver Image">
+                            @else
+                                <img src="{{ asset('images/default-driver.png') }}" class="rounded-circle mb-3" width="150" height="150" alt="Default Driver Image">
+                            @endif
 
                            
                             <h4>{{ $driver->fname }} {{ $driver->lname }}</h4>
@@ -121,6 +125,17 @@
                                             </div>
                                         </div>
                                     </div>
+                                     <div class="col-12 mt-3">
+                                         <label class="form-label">Availability</label>
+                                         <div class="form-check">
+                                             <input class="form-check-input" type="radio" id="is_available" name="is_available" value="1" {{ $driver->is_available ? 'checked' : '' }}>
+                                             <label class="form-check-label" for="is_available">Available</label>
+                                         </div>
+                                         <div class="form-check">
+                                             <input class="form-check-input" type="radio" id="is_not_available" name="is_available" value="0" {{ !$driver->is_available ? 'checked' : '' }}>
+                                             <label class="form-check-label" for="is_not_available">Not Available</label>
+                                         </div>
+                                     </div>
                                     <div class="col-12">
                                         <label for="image" class="form-label">Profile Image</label>
                                         <input type="file" class="form-control" id="image" name="image">

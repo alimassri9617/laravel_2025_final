@@ -23,10 +23,15 @@ class Driver extends Model
         'work_area',
         'image',
         'fcm_token',
-        'approved'
+        'approved',
+        'is_available'
     ];
 
     protected $hidden = ['password'];
+
+    protected $casts = [
+        'is_available' => 'boolean',
+    ];
 
     public function setPasswordAttribute($value)
     {

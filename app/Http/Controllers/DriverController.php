@@ -307,8 +307,10 @@ class DriverController extends Controller
             return redirect()->route('driver.login');
         }
 
+        $driver = Driver::find(Session::get('driver_id'));
+
         return view('driver.profile', [
-            'driver' => Driver::find(Session::get('driver_id'))
+            'driver' => $driver
         ]);
     }
 
@@ -333,12 +335,13 @@ class DriverController extends Controller
             'plate_number' => 'required|string|max:20',
             'work_area' => 'required|array',
             'work_area.*' => 'string',
+            'is_available' => 'required|boolean',
             'image' => 'nullable|image|max:2048'
         ]);
 
         $data = $request->only([
             'fname', 'lname', 'email', 'phone',
-            'vehicle_type', 'plate_number'
+            'vehicle_type', 'plate_number', 'is_available'
         ]);
         $data['work_area'] = implode(',', $request->work_area);
 
