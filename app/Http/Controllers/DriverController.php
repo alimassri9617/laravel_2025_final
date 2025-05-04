@@ -52,12 +52,12 @@ class DriverController extends Controller
 
 
     protected function checkDriverSession()
-{
-    if (!Session::has('driver_id')) {
-        return redirect()->route('driver.login');
+    {
+        if (!Session::has('driver_id')) {
+            return redirect()->route('driver.login');
+        }
+        return null;
     }
-    return null;
-}
     // Handle registration
     public function register(Request $request)
     {
@@ -172,13 +172,14 @@ class DriverController extends Controller
            return $redirect;
        }
    
-       $driver = Driver::find(Session::get('driver_id'));
+       $driverId = Session::get('driver_id');
+       $driver = Driver::find($driverId);
        
-       // Get deliveries that:
-       // 1. Have no driver assigned (NULL driver_id)
-       // 2. Are in pending status
-       // 3. Match the driver's work area
-       $deliveries = Delivery::all();
+       // Get deliveries assigned to this driver that are pending or not yet accepted
+       $deliveries = Delivery::where('driver_id', $driverId)
+                             ->whereIn('status', ['pending'])
+                             ->orderBy('created_at', 'desc')
+                             ->get();
    
        return view('driver.available-deliveries', [
            'driver' => $driver,
@@ -187,46 +188,49 @@ class DriverController extends Controller
    }
     // Accept a delivery
     public function acceptDelivery($id)
-{
-    if ($redirect = $this->checkDriverSession()) {
-        return $redirect;
+    {
+        if ($redirect = $this->checkDriverSession()) {
+            return $redirect;
+        }
+
+        $delivery = Delivery::findOrFail($id);
+        $driverId = Session::get('driver_id');
+
+        // Updated validation: check if delivery is assigned to this driver and status is pending
+        if ($delivery->driver_id != $driverId || $delivery->status != 'pending') {
+            return back()->with('error', 'Delivery no longer available');
+        }
+
+        $delivery->update([
+            'status' => 'accepted'
+        ]);
+
+        return back()->with('success', 'Delivery accepted successfully!');
+        
     }
 
-    $delivery = Delivery::findOrFail($id);
-    $driverId = Session::get('driver_id');
+    // Reject a delivery
+    public function rejectDelivery($id)
+    {
+        if ($redirect = $this->checkDriverSession()) {
+            return $redirect;
+        }
 
-    // Additional validation
-    if ($delivery->driver_id || $delivery->status != 'pending') {
-        return back()->with('error', 'Delivery no longer available');
+        $delivery = Delivery::findOrFail($id);
+        $driverId = Session::get('driver_id');
+
+        // Ensure the delivery is assigned to this driver and is pending
+        if ($delivery->driver_id != $driverId || $delivery->status != 'pending') {
+            return back()->with('error', 'Delivery cannot be rejected.');
+        }
+
+        // Since 'rejected' is not an allowed status, use 'cancelled' instead
+        $delivery->update([
+            'status' => 'cancelled'
+        ]);
+
+        return back()->with('success', 'Delivery rejected successfully.');
     }
-
-    $delivery->update([
-        'driver_id' => $driverId,
-        'status' => 'accepted'
-    ]);
-
-    // Save notification in database
-    \App\Models\DriverNotification::create([
-        'driver_id' => $driverId,
-        'title' => 'New Delivery Assigned',
-        'body' => 'You have been assigned a new delivery request. Please check your dashboard.',
-        'read' => false,
-    ]);
-
-    // Send push notification to driver
-    $driver = Driver::find($driverId);
-    if ($driver && $driver->fcm_token) {
-        $title = 'New Delivery Assigned';
-        $body = 'You have been assigned a new delivery request. Please check your dashboard.';
-        $data = [
-            'delivery_id' => (string)$delivery->id,
-            'status' => $delivery->status,
-        ];
-        $this->fcmService->sendNotification($driver->fcm_token, $title, $body, $data);
-    }
-
-    return back()->with('success', 'Delivery accepted successfully!');
-}
 
     // Update delivery status
     public function updateDeliveryStatus(Request $request, $id)
@@ -357,25 +361,25 @@ class DriverController extends Controller
     }
 
     public function chat($delivery)
-{
-    // Convert the parameter to a model if it's an ID
-    if (!$delivery instanceof \App\Models\Delivery) {
-        $delivery = \App\Models\Delivery::findOrFail($delivery);
+    {
+        // Convert the parameter to a model if it's an ID
+        if (!$delivery instanceof \App\Models\Delivery) {
+            $delivery = \App\Models\Delivery::findOrFail($delivery);
+        }
+        
+        // Make sure this driver is assigned to this delivery
+        if ($delivery->driver_id != session('driver_id')) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        // Get the client information
+        $client = \App\Models\Client::find($delivery->client_id);
+        
+        // Get all messages for this delivery
+        $messages = \App\Models\Message::where('delivery_id', $delivery->id)
+                                       ->orderBy('created_at')
+                                       ->get();
+        
+        return view('driver.chat', compact('delivery', 'client', 'messages'));
     }
-    
-    // Make sure this driver is assigned to this delivery
-    if ($delivery->driver_id != session('driver_id')) {
-        abort(403, 'Unauthorized action.');
-    }
-    
-    // Get the client information
-    $client = \App\Models\Client::find($delivery->client_id);
-    
-    // Get all messages for this delivery
-    $messages = \App\Models\Message::where('delivery_id', $delivery->id)
-                                   ->orderBy('created_at')
-                                   ->get();
-    
-    return view('driver.chat', compact('delivery', 'client', 'messages'));
-}
 }

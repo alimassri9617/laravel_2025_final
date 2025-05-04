@@ -36,7 +36,33 @@ class AdminController extends Controller
             return redirect()->route('admin.login');
         }
 
-        return view('admin.dashboard');
+        // Fetch drivers with their reviews and clients eager loaded
+        $drivers = Driver::with(['reviews.client'])->orderBy('created_at', 'desc')->get();
+
+        return view('admin.dashboard', compact('drivers'));
+    }
+
+    public function reviews(Request $request)
+    {
+        if (!Session::get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        // Order by first name and last name instead of non-existent 'name' column
+        $drivers = Driver::orderBy('fname')->orderBy('lname')->get();
+
+        $selectedDriverId = $request->query('driver_id');
+        $selectedDriver = null;
+        $reviews = collect();
+
+        if ($selectedDriverId) {
+            $selectedDriver = Driver::with(['reviews.client'])->find($selectedDriverId);
+            if ($selectedDriver) {
+                $reviews = $selectedDriver->reviews;
+            }
+        }
+
+        return view('admin.reviews', compact('drivers', 'selectedDriver', 'reviews'));
     }
 
     public function drivers()

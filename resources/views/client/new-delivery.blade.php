@@ -69,6 +69,17 @@
                             <label for="special_instructions" class="form-label">Special Instructions</label>
                             <textarea class="form-control" id="special_instructions" name="special_instructions" rows="3"></textarea>
                         </div>
+                        <div class="col-md-6">
+                            <label for="driver_id" class="form-label">Select Driver</label>
+                            <select class="form-select" id="driver_id" name="driver_id" required>
+                                <option value="" disabled selected>Select a driver</option>
+                                @foreach($drivers as $driver)
+                                    <option value="{{ $driver->id }}">
+                                        {{ $driver->fname }} {{ $driver->lname }} - Average Rating: {{ number_format($driver->average_rating, 2) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Submit Delivery Request

@@ -42,8 +42,20 @@ class Driver extends Model
     {
         return $this->morphMany(Message::class, 'sender');
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(\App\Models\Review::class);
+    }
+
+    public function averageRating()
+    {
+        return $this->reviews()->avg('rating');
+    }
+
     public function routeNotificationForFcm()
 {
     return $this->fcm_token;
 }
+
 }

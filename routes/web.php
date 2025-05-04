@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\GoogleAuthController;
 
 Route::post('/driver/fcm-token', [DriverController::class, 'saveFcmToken']);
 
@@ -25,6 +26,8 @@ use App\Http\Controllers\SocialLoginController;
 Route::get('/', function () {
     return view('index');
 })->name('home');
+
+Route::get('/google-authenticate', [GoogleAuthController::class, 'authenticate'])->name('google.authenticate');
 
 
 
@@ -100,7 +103,7 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/login/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
     // Chat message storage
     Route::post('/chat', [MessageController::class, 'store'])->name('chat.store');
-    Route::post('/deliveries/{delivery}/review', [ClientController::class, 'submitReview'])->name('client.review.submit');
+    Route::post('/deliveries/{delivery}/review', [ClientController::class, 'submitReview'])->name('review.submit');
 });
 
 
@@ -116,12 +119,13 @@ Route::prefix('driver')->name('driver.')->group(function() {
     Route::get('/dashboard', [DriverController::class, 'dashboard'])->name('dashboard');
     Route::get('/available-deliveries', [DriverController::class, 'availableDeliveries'])->name('available-deliveries');
     Route::post('/accept-delivery/{id}', [DriverController::class, 'acceptDelivery'])->name('accept-delivery');
+    Route::post('/reject-delivery/{id}', [DriverController::class, 'rejectDelivery'])->name('reject-delivery');
     Route::post('/update-status/{id}', [DriverController::class, 'updateDeliveryStatus'])->name('update-status');
     Route::get('/earnings', [DriverController::class, 'earnings'])->name('earnings');
     Route::get('/profile', [DriverController::class, 'showProfile'])->name('profile');
     Route::post('/profile', [DriverController::class, 'updateProfile'])->name('profile.update');
    // If you're using GET (as in your form)
-Route::get('/complete/{id}', [DriverController::class, 'markAsComplete'])->name('complete');
+Route::post('/complete/{id}', [DriverController::class, 'markAsComplete'])->name('complete');
 
     // Driver chat route
     Route::get('/chat/{delivery}', [DriverController::class, 'chat'])->name('chat.show');
@@ -141,6 +145,9 @@ Route::prefix('admin')->group(function() {
     Route::post('/drivers/{driver}/approve', [AdminController::class, 'approveDriver'])->name('admin.drivers.approve');
     Route::post('/drivers/{driver}/delete', [AdminController::class, 'deleteDriver'])->name('admin.drivers.delete');
     Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+    // New route for admin reviews page
+    Route::get('/reviews', [AdminController::class, 'reviews'])->name('admin.reviews');
 });
 
 Route::get('/test-session', function () {

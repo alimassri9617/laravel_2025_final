@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Log;
 use App\Models\Client;
 use App\Models\Delivery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-    use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Session;
+use App\Services\FcmServiceV1;
+use App\Models\DriverNotification;
 
 class ClientController extends Controller
 {
@@ -176,8 +179,15 @@ class ClientController extends Controller
             return redirect()->route('client.login');
         }
 
+        // Fetch drivers with average rating
+        $drivers = \App\Models\Driver::with('reviews')->get()->map(function ($driver) {
+            $driver->average_rating = $driver->averageRating() ?? 0;
+            return $driver;
+        });
+
         return view('client.new-delivery', [
-            'clientName' => Session::get('client_name')
+            'clientName' => Session::get('client_name'),
+            'drivers' => $drivers
         ]);
     }
 
@@ -194,7 +204,8 @@ class ClientController extends Controller
             'package_type' => 'required|in:small,medium,large,extra_large',
             'delivery_type' => 'required|in:standard,express,overnight',
             'delivery_date' => 'required|date',
-            'special_instructions' => 'nullable'
+            'special_instructions' => 'nullable',
+            'driver_id' => 'required|exists:drivers,id'
         ]);
 
         $delivery = new Delivery();
@@ -205,9 +216,34 @@ class ClientController extends Controller
         $delivery->delivery_type = $request->delivery_type;
         $delivery->delivery_date = $request->delivery_date;
         $delivery->special_instructions = $request->special_instructions;
+        $delivery->driver_id = $request->driver_id;
         $delivery->status = 'pending';
         $delivery->amount = $this->calculateAmount($request->package_type, $request->delivery_type);
         $delivery->save();
+
+        // Notify the assigned driver
+        $fcmService = new FcmServiceV1();
+        $driver = \App\Models\Driver::find($delivery->driver_id);
+        if ($driver) {
+            // Save notification in database
+            DriverNotification::create([
+                'driver_id' => $driver->id,
+                'title' => 'New Delivery Assigned',
+                'body' => 'You have been assigned a new delivery request. Please check your dashboard.',
+                'read' => false,
+            ]);
+
+            // Send push notification
+            if ($driver->fcm_token) {
+                $title = 'New Delivery Assigned';
+                $body = 'You have been assigned a new delivery request. Please check your dashboard.';
+                $data = [
+                    'delivery_id' => (string)$delivery->id,
+                    'status' => $delivery->status,
+                ];
+                $fcmService->sendNotification($driver->fcm_token, $title, $body, $data);
+            }
+        }
 
         return redirect()->route('client.deliveries')->with('success', 'Delivery created successfully!');
     }

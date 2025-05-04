@@ -68,93 +68,116 @@
         </nav>
 
         <!-- Dashboard Content -->
-        <div class="container-fluid p-4">
-            <h2 class="mb-4">Dashboard</h2>
+            <div class="container-fluid p-4">
+                <h2 class="mb-4">Dashboard</h2>
 
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Assigned Deliveries</h5>
-                            <p class="display-4">{{ $deliveries->whereIn('status', ['accepted', 'in_progress'])->count() }}</p>
-                        </div>
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Completed Deliveries</h5>
-                            <p class="display-4">{{ $deliveries->where('status', 'completed')->count() }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Earnings</h5>
-                            <p class="display-4">${{ number_format($deliveries->where('status', 'completed')->sum('amount'), 2) }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                @endif
 
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Recent Deliveries</h5>
+                @if(session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Assigned Deliveries</h5>
+                                <p class="display-4">{{ $deliveries->whereIn('status', ['accepted', 'in_progress'])->count() }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Completed Deliveries</h5>
+                                <p class="display-4">{{ $deliveries->where('status', 'completed')->count() }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Earnings</h5>
+                                <p class="display-4">${{ number_format($deliveries->where('status', 'completed')->sum('amount'), 2) }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-            @if($deliveries->isEmpty())
-                <div class="alert alert-info">No deliveries found</div>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Pickup</th>
-                                <th>Destination</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>completed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($deliveries as $delivery)
-                            <tr>
-                                <td>#{{ $delivery->id }}</td>
-                                <td>{{ $delivery->pickup_location }}</td>
-                                <td>{{ $delivery->destination }}</td>
-                                <td>${{ number_format($delivery->amount, 2) }}</td>
-                                <td>
-                                    <span class="badge badge-status bg-{{ 
-                                        $delivery->status == 'completed' ? 'success' : 
-                                        ($delivery->status == 'pending' ? 'warning' : 'primary')
-                                    }}">
-                                        {{ ucfirst(str_replace('_', ' ', $delivery->status)) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    
-                                    <form action="{{ route('driver.complete', $delivery->id) }}" method="GET">
-                                        
-                                       
-                                        @if($delivery->status == 'completed')
-                                            <span class="badge bg-success">Yes</span>
-                                            <button type="submit" class="btn btn-secondary btn-sm mt-2" disabled>Completed</button>
-                                        @else
-                                            <span class="badge bg-danger">No</span>
-                                            <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
-                                        @endif
-                                    </form>
-                                    
-                                    
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Recent Deliveries</h5>
+                    </div>
+                    <div class="card-body">
+                        @if($deliveries->isEmpty())
+                            <div class="alert alert-info">No deliveries found</div>
+                        @else
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Pickup</th>
+                                        <th>Destination</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>completed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($deliveries as $delivery)
+                                    <tr>
+                                        <td>#{{ $delivery->id }}</td>
+                                        <td>{{ $delivery->pickup_location }}</td>
+                                        <td>{{ $delivery->destination }}</td>
+                                        <td>${{ number_format($delivery->amount, 2) }}</td>
+                                        <td>
+                                            <span class="badge badge-status bg-{{ 
+                                                $delivery->status == 'completed' ? 'success' : 
+                                                ($delivery->status == 'pending' ? 'warning' : 
+                                                ($delivery->status == 'cancelled' ? 'danger' : 'primary'))
+                                            }}">
+                                                {{ ucfirst(str_replace('_', ' ', $delivery->status)) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            
+                                            @if($delivery->status == 'completed')
+                                                <span class="badge bg-success">Yes</span>
+                                                <button type="button" class="btn btn-secondary btn-sm mt-2" disabled>Completed</button>
+                                            @elseif($delivery->status == 'pending')
+                                                <form action="{{ route('driver.accept-delivery', $delivery->id) }}" method="POST" style="display:inline-block;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-success btn-sm mt-2">Accept</button>
+                                                </form>
+                                                <form action="{{ route('driver.reject-delivery', $delivery->id) }}" method="POST" style="display:inline-block;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-danger btn-sm mt-2">Reject</button>
+                                                </form>
+                                            @elseif($delivery->status == 'accepted')
+                                                <form action="{{ route('driver.complete', $delivery->id) }}" method="POST" style="display:inline-block;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
+                                                </form>
+                                            @else
+                                                <span class="badge bg-danger">No</span>
+                                            @endif
+                                            
+                                            
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                
 
             <!-- Notifications Section -->
             <div class="mt-4">
@@ -250,9 +273,30 @@
         // Handle incoming messages while app is in foreground
         messaging.onMessage(function(payload) {
             console.log('Message received. ', payload);
-            alert(payload.notification.title + ": " + payload.notification.body);
+
+            // Update toast content
+            document.getElementById('toastTitle').textContent = payload.notification.title;
+            document.getElementById('toastBody').textContent = payload.notification.body;
+
+            // Show the toast
+            var toastEl = document.getElementById('notificationToast');
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
         });
     </script>
+
+    <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                You have a new notification.
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

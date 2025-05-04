@@ -33,6 +33,11 @@
                     <i class="fas fa-users me-2"></i> Driver Management
                 </a>
             </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-white" href="{{ route('admin.reviews') }}">
+                    <i class="fas fa-star me-2"></i> Driver Reviews
+                </a>
+            </li>
             <li class="nav-item mt-auto">
                 <a class="nav-link text-white" href="{{ route('admin.logout') }}">
                     <i class="fas fa-sign-out-alt me-2"></i> Logout
