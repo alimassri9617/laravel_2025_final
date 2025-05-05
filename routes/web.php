@@ -80,7 +80,7 @@ Route::get("/createClient",function (){
         'amount' => 15.00,
         'status' => 'pending'
     ]);
-
+ 
     Delivery::create([
         'client_id' => $client->id,
         'pickup_location' => '789 Oak St, Chicago',
