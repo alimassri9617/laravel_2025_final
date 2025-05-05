@@ -180,10 +180,16 @@ class DriverController extends Controller
                              ->whereIn('status', ['pending'])
                              ->orderBy('created_at', 'desc')
                              ->get();
+
+       // Get recent deliveries for this driver (all deliveries ordered by created_at desc)
+       $recentDeliveries = Delivery::where('driver_id', $driverId)
+                                  ->orderBy('created_at', 'desc')
+                                  ->get();
    
        return view('driver.available-deliveries', [
            'driver' => $driver,
-           'deliveries' => $deliveries
+           'deliveries' => $deliveries,
+           'recentDeliveries' => $recentDeliveries
        ]);
    }
     // Accept a delivery
