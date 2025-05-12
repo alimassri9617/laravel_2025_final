@@ -26,53 +26,74 @@
                 </div>
             @endif
 
+            <!-- Recent Deliveries Table -->
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0">Deliveries in your work area</h5>
+                    <h5 class="mb-0">Recent Deliveries</h5>
                 </div>
                 <div class="card-body">
-                    @if($deliveries->isEmpty())
-                        <div class="alert alert-info">No available deliveries in your area</div>
+                    @if($recentDeliveries->isEmpty())
+                        <div class="alert alert-info">No deliveries found</div>
                     @else
-                        <div class="table-responsive">
-                           <!-- Add client information to the table -->
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Client</th>
-            <th>Pickup</th>
-            <th>Destination</th>
-            <th>Package</th>
-            <th>Amount</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($deliveries as $delivery)
-        <tr>
-            <td>#{{ $delivery->id }}</td>
-            <td>
-                {{ $delivery->client->fname }} {{ $delivery->client->lname }}<br>
-                <small class="text-muted">{{ $delivery->client->phone }}</small>
-            </td>
-            <td>{{ $delivery->pickup_location }}</td>
-            <td>{{ $delivery->destination }}</td>
-            <td>{{ ucfirst(str_replace('_', ' ', $delivery->package_type)) }}</td>
-            <td>${{ number_format($delivery->amount, 2) }}</td>
-            <td>
-                <form method="POST" action="{{ route('driver.accept-delivery', $delivery->id) }}">
-                    @csrf
-                    <button type="submit" class="btn btn-sm btn-success">
-                        <i class="fas fa-check"></i> Accept
-                    </button>
-                </form>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Pickup</th>
+                                    <th>Destination</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Completed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($recentDeliveries as $delivery)
+                                <tr>
+                                    <td>#{{ $delivery->id }}</td>
+                                    <td>{{ $delivery->pickup_location }}</td>
+                                    <td>{{ $delivery->destination }}</td>
+                                    <td>${{ number_format($delivery->amount, 2) }}</td>
+                                    <td>
+                                        <span class="badge badge-status bg-{{ 
+                                            $delivery->status == 'completed' ? 'success' : 
+                                            ($delivery->status == 'pending' ? 'warning' : 
+                                            ($delivery->status == 'cancelled' ? 'danger' : 'primary'))
+                                        }}">
+                                            {{ ucfirst(str_replace('_', ' ', $delivery->status)) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        
+                                        @if($delivery->status == 'completed')
+                                            <span class="badge bg-success">Yes</span>
+                                            <button type="button" class="btn btn-secondary btn-sm mt-2" disabled>Completed</button>
+                                        @elseif($delivery->status == 'pending')
+                                            <form action="{{ route('driver.accept-delivery', $delivery->id) }}" method="POST" style="display:inline-block;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm mt-2">Accept</button>
+                                            </form>
+                                            <form action="{{ route('driver.reject-delivery', $delivery->id) }}" method="POST" style="display:inline-block;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-danger btn-sm mt-2">Reject</button>
+                                            </form>
+                                        @elseif($delivery->status == 'accepted')
+                                            <form action="{{ route('driver.complete', $delivery->id) }}" method="POST" style="display:inline-block;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
+                                            </form>
+                                            <a href="{{ route('driver.chat.show', $delivery->id) }}" class="btn btn-info btn-sm mt-2 ms-2">Chat with Client</a>
+                                        @else
+                                            <span class="badge bg-danger">No</span>
+                                        @endif
+                                        
+                                        
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     @endif
                 </div>
             </div>

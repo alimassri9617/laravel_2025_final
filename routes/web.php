@@ -4,6 +4,15 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\ClientController as ClientCtrl;
+
+Route::get('/client', function () {
+    return redirect()->route('client.dashboard');
+});
+
+Route::get('/driver', function () {
+    return redirect()->route('driver.dashboard');
+});
 
 Route::post('/driver/fcm-token', [DriverController::class, 'saveFcmToken']);
 
@@ -12,6 +21,8 @@ Route::get('/debug/drivers-fcm-tokens', function () {
     $drivers = \App\Models\Driver::select('id', 'fname', 'lname', 'fcm_token')->get();
     return response()->json($drivers);
 });
+
+Route::get('/api/drivers/filter', [ClientCtrl::class, 'filterDrivers'])->name('api.drivers.filter');
 
 use Illuminate\Support\Facades\Broadcast;
 
@@ -69,7 +80,7 @@ Route::get("/createClient",function (){
         'amount' => 15.00,
         'status' => 'pending'
     ]);
-
+ 
     Delivery::create([
         'client_id' => $client->id,
         'pickup_location' => '789 Oak St, Chicago',

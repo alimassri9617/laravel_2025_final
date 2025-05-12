@@ -173,22 +173,58 @@ class ClientController extends Controller
     }
 
     // Show new delivery form
-    public function createDelivery()
+    public function createDelivery(Request $request)
     {
         if (!Session::has('client_id')) {
             return redirect()->route('client.login');
         }
 
-        // Fetch drivers with average rating
-        $drivers = \App\Models\Driver::with('reviews')->get()->map(function ($driver) {
+        $pickup = $request->query('pickup_location');
+        $destination = $request->query('destination');
+
+        $query = \App\Models\Driver::where('is_available', true);
+
+        if ($pickup && $destination) {
+            $query->where(function ($q) use ($pickup, $destination) {
+                $q->where('work_area', 'like', "%$pickup%")
+                  ->where('work_area', 'like', "%$destination%");
+            });
+        }
+
+        $drivers = $query->with('reviews')->get()->map(function ($driver) {
             $driver->average_rating = $driver->averageRating() ?? 0;
             return $driver;
         });
 
         return view('client.new-delivery', [
             'clientName' => Session::get('client_name'),
-            'drivers' => $drivers
+            'drivers' => $drivers,
+            'pickup_location' => $pickup,
+            'destination' => $destination
         ]);
+    }
+
+    // API method to filter drivers by pickup and destination locations
+    public function filterDrivers(Request $request)
+    {
+        $pickup = $request->query('pickup_location');
+        $destination = $request->query('destination');
+
+        if (!$pickup || !$destination) {
+            return response()->json(['error' => 'Pickup and destination are required'], 400);
+        }
+
+        $drivers = \App\Models\Driver::where('is_available', true)
+            ->where('work_area', 'like', "%$pickup%")
+            ->where('work_area', 'like', "%$destination%")
+            ->with('reviews')
+            ->get()
+            ->map(function ($driver) {
+                $driver->average_rating = $driver->averageRating() ?? 0;
+                return $driver;
+            });
+
+        return response()->json($drivers);
     }
 
     // Store new delivery
@@ -245,7 +281,7 @@ class ClientController extends Controller
             }
         }
 
-        return redirect()->route('client.deliveries')->with('success', 'Delivery created successfully!');
+        return redirect()->route('client.dashboard')->with('success', 'Delivery created successfully!');
     }
 
     // Calculate delivery amount

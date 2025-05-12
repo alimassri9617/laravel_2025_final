@@ -23,8 +23,8 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>New Delivery Request</h2>
-            <a href="{{ route('client.deliveries') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Deliveries
+            <a href="{{ route('client.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
         </div>
 
@@ -38,11 +38,27 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="pickup_location" class="form-label">Pickup Location</label>
-                            <input type="text" class="form-control" id="pickup_location" name="pickup_location" required>
+                            <select class="form-select" id="pickup_location" name="pickup_location" required>
+                                <option value="" disabled {{ !isset($pickup_location) ? 'selected' : '' }}>Select Pickup Location</option>
+                                <option value="Beirut" {{ (isset($pickup_location) && $pickup_location == 'Beirut') ? 'selected' : '' }}>Beirut</option>
+                                <option value="Tripoli" {{ (isset($pickup_location) && $pickup_location == 'Tripoli') ? 'selected' : '' }}>Tripoli</option>
+                                <option value="Saida" {{ (isset($pickup_location) && $pickup_location == 'Saida') ? 'selected' : '' }}>Saida</option>
+                                <option value="Tyre" {{ (isset($pickup_location) && $pickup_location == 'Tyre') ? 'selected' : '' }}>Tyre</option>
+                                <option value="Jounieh" {{ (isset($pickup_location) && $pickup_location == 'Jounieh') ? 'selected' : '' }}>Jounieh</option>
+                                <option value="Zahle" {{ (isset($pickup_location) && $pickup_location == 'Zahle') ? 'selected' : '' }}>Zahle</option>
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label for="destination" class="form-label">Destination</label>
-                            <input type="text" class="form-control" id="destination" name="destination" required>
+                            <select class="form-select" id="destination" name="destination" required>
+                                <option value="" disabled {{ !isset($destination) ? 'selected' : '' }}>Select Destination</option>
+                                <option value="Beirut" {{ (isset($destination) && $destination == 'Beirut') ? 'selected' : '' }}>Beirut</option>
+                                <option value="Tripoli" {{ (isset($destination) && $destination == 'Tripoli') ? 'selected' : '' }}>Tripoli</option>
+                                <option value="Saida" {{ (isset($destination) && $destination == 'Saida') ? 'selected' : '' }}>Saida</option>
+                                <option value="Tyre" {{ (isset($destination) && $destination == 'Tyre') ? 'selected' : '' }}>Tyre</option>
+                                <option value="Jounieh" {{ (isset($destination) && $destination == 'Jounieh') ? 'selected' : '' }}>Jounieh</option>
+                                <option value="Zahle" {{ (isset($destination) && $destination == 'Zahle') ? 'selected' : '' }}>Zahle</option>
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label for="package_type" class="form-label">Package Type</label>
@@ -80,7 +96,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 d-flex justify-content-center">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Submit Delivery Request
                             </button>
@@ -94,6 +110,50 @@
     <script>
         // Set minimum date to today
         document.getElementById('delivery_date').min = new Date().toISOString().split('T')[0];
+
+        // Function to fetch filtered drivers based on pickup and destination
+        async function fetchFilteredDrivers() {
+            const pickup = document.getElementById('pickup_location').value;
+            const destination = document.getElementById('destination').value;
+            const driverSelect = document.getElementById('driver_id');
+
+            if (!pickup || !destination) {
+                // Clear driver options except the placeholder
+                driverSelect.innerHTML = '<option value="" disabled selected>Select a driver</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/drivers/filter?pickup_location=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(destination)}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const drivers = await response.json();
+
+                // Clear existing options
+                driverSelect.innerHTML = '<option value="" disabled selected>Select a driver</option>';
+
+                // Populate new options
+                drivers.forEach(driver => {
+                    const option = document.createElement('option');
+                    option.value = driver.id;
+                    const avgRating = Number(driver.average_rating) || 0;
+                    option.textContent = `${driver.fname} ${driver.lname} - Average Rating: ${avgRating.toFixed(2)}`;
+                    driverSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching drivers:', error);
+            }
+        }
+
+        // Add event listeners to pickup and destination selects
+        document.getElementById('pickup_location').addEventListener('change', fetchFilteredDrivers);
+        document.getElementById('destination').addEventListener('change', fetchFilteredDrivers);
+
+        // Initial fetch if both locations are pre-selected
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchFilteredDrivers();
+        });
     </script>
 </body>
 </html>

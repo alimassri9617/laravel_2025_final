@@ -180,10 +180,16 @@ class DriverController extends Controller
                              ->whereIn('status', ['pending'])
                              ->orderBy('created_at', 'desc')
                              ->get();
+
+       // Get recent deliveries for this driver (all deliveries ordered by created_at desc)
+       $recentDeliveries = Delivery::where('driver_id', $driverId)
+                                  ->orderBy('created_at', 'desc')
+                                  ->get();
    
        return view('driver.available-deliveries', [
            'driver' => $driver,
-           'deliveries' => $deliveries
+           'deliveries' => $deliveries,
+           'recentDeliveries' => $recentDeliveries
        ]);
    }
     // Accept a delivery
@@ -307,8 +313,10 @@ class DriverController extends Controller
             return redirect()->route('driver.login');
         }
 
+        $driver = Driver::find(Session::get('driver_id'));
+
         return view('driver.profile', [
-            'driver' => Driver::find(Session::get('driver_id'))
+            'driver' => $driver
         ]);
     }
 
@@ -333,12 +341,13 @@ class DriverController extends Controller
             'plate_number' => 'required|string|max:20',
             'work_area' => 'required|array',
             'work_area.*' => 'string',
+            'is_available' => 'required|boolean',
             'image' => 'nullable|image|max:2048'
         ]);
 
         $data = $request->only([
             'fname', 'lname', 'email', 'phone',
-            'vehicle_type', 'plate_number'
+            'vehicle_type', 'plate_number', 'is_available'
         ]);
         $data['work_area'] = implode(',', $request->work_area);
 
