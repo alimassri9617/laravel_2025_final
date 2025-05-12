@@ -75,12 +75,7 @@
                 <div class="mt-3 text-center">
                     Don't have an account? <a href="{{ route('driver.register') }}">Register here</a>
                 </div>
-                <hr>
-                <div class="text-center">
-                    <p class="mb-2">Or login with:</p>
-                    <a href="#" class="btn btn-outline-primary me-2"><i class="fab fa-google"></i></a>
-                    <a href="#" class="btn btn-outline-primary"><i class="fab fa-facebook-f"></i></a>
-                </div>
+                
             </div>
         </div>
     </div>
