@@ -167,4 +167,4 @@ Route::get('/test-session', function () {
         'driver_id' => session('driver_id'),
         'session_data' => session()->all()
     ]);
-});
+}); 
