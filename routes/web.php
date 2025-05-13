@@ -115,6 +115,9 @@ Route::prefix('client')->name('client.')->group(function () {
     // Chat message storage
     Route::post('/chat', [MessageController::class, 'store'])->name('chat.store');
     Route::post('/deliveries/{delivery}/review', [ClientController::class, 'submitReview'])->name('review.submit');
+
+    // Client calendar route
+    Route::get('/calendar', [ClientController::class, 'calendar'])->name('calendar');
 });
 
 
@@ -140,6 +143,9 @@ Route::post('/complete/{id}', [DriverController::class, 'markAsComplete'])->name
 
     // Driver chat route
     Route::get('/chat/{delivery}', [DriverController::class, 'chat'])->name('chat.show');
+
+    // Driver calendar route
+    Route::get('/calendar', [DriverController::class, 'calendar'])->name('calendar');
 });
 
 

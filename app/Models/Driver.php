@@ -63,4 +63,8 @@ class Driver extends Model
     return $this->fcm_token;
 }
 
+    public function calendarEvents()
+    {
+        return $this->morphMany(\App\Models\CalendarEvent::class, 'user');
+    }
 }

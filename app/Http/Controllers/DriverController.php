@@ -395,4 +395,23 @@ class DriverController extends Controller
         
         return view('driver.chat', compact('delivery', 'client', 'messages'));
     }
+
+      public function calendar()
+    {
+        if (!Session::has('driver_id')) {
+            return redirect()->route('driver.login');
+        }
+
+        $driverId = Session::get('driver_id');
+        $calendarEvents = \App\Models\CalendarEvent::where('user_id', $driverId)
+            ->where('user_type', \App\Models\Driver::class)
+            ->orderBy('event_date', 'asc')
+            ->get();
+
+        return view('driver.calendar', [
+            'driverName' => Session::get('driver_name'),
+            'calendarEvents' => $calendarEvents
+        ]);
+    }
 }
+

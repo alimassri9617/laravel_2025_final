@@ -46,7 +46,12 @@
 
     <!-- Notifications Section -->
     <div class="mt-4">
-        <h4>Notifications</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Notifications</h4>
+            <a href="{{ route('driver.calendar') }}" class="btn btn-info btn-sm">
+                <i class="fas fa-calendar-alt"></i> View Calendar
+            </a>
+        </div>
         @if($notifications->isEmpty())
             <p>No notifications</p>
         @else

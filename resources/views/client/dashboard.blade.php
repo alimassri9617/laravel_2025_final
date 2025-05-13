@@ -29,9 +29,14 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Dashboard</h2>
-            <a href="{{ route('client.deliveries.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> New Delivery
-            </a>
+            <div>
+                <a href="{{ route('client.calendar') }}" class="btn btn-info me-2">
+                    <i class="fas fa-calendar-alt"></i> View Calendar
+                </a>
+                <a href="{{ route('client.deliveries.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Delivery
+                </a>
+            </div>
         </div>
 
         <div class="card shadow-sm mb-4">

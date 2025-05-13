@@ -72,9 +72,9 @@
                         <div class="col-md-6">
                             <label for="delivery_type" class="form-label">Delivery Type</label>
                             <select class="form-select" id="delivery_type" name="delivery_type" required>
-                                <option value="standard">Standard (1-3 days)</option>
-                                <option value="express">Express (Same day)</option>
-                                <option value="overnight">Overnight</option>
+                                <option value="standard">Standard (2-3 days)</option>
+                                <option value="express">same day</option>
+                                <option value="overnight">fast</option>
                             </select>
                         </div>
                         <div class="col-md-6">

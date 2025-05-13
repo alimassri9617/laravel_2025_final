@@ -23,8 +23,8 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Delivery #{{ $delivery->id }}</h2>
-            <a href="{{ route('client.deliveries') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Deliveries
+            <a href="{{ route('client.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
         </div>
 

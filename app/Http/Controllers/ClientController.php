@@ -19,6 +19,24 @@ class ClientController extends Controller
         return view('client.login');
     }
     
+    public function calendar()
+    {
+        if (!\Illuminate\Support\Facades\Session::has('client_id')) {
+            return redirect()->route('client.login');
+        }
+
+        $clientId = \Illuminate\Support\Facades\Session::get('client_id');
+        $calendarEvents = \App\Models\CalendarEvent::where('user_id', $clientId)
+            ->where('user_type', \App\Models\Client::class)
+            ->orderBy('event_date', 'asc')
+            ->get();
+
+        return view('client.calendar', [
+            'clientName' => \Illuminate\Support\Facades\Session::get('client_name'),
+            'calendarEvents' => $calendarEvents
+        ]);
+    }
+    
 
     // Handle login
     
@@ -244,18 +262,52 @@ class ClientController extends Controller
             'driver_id' => 'required|exists:drivers,id'
         ]);
 
+        // Calculate delivery date based on delivery type
+        $currentDate = \Carbon\Carbon::now();
+        switch ($request->delivery_type) {
+            case 'express':
+                $calculatedDate = $currentDate->copy()->addDays(0);
+                break;
+            case 'overnight':
+                $calculatedDate = $currentDate->copy()->addDays(1);
+                break;
+            case 'standard':
+            default:
+                $calculatedDate = $currentDate->copy()->addDays(3);
+                break;
+        }
+
         $delivery = new Delivery();
         $delivery->client_id = Session::get('client_id');
         $delivery->pickup_location = $request->pickup_location;
         $delivery->destination = $request->destination;
         $delivery->package_type = $request->package_type;
         $delivery->delivery_type = $request->delivery_type;
-        $delivery->delivery_date = $request->delivery_date;
+        $delivery->delivery_date = $calculatedDate->toDateString();
         $delivery->special_instructions = $request->special_instructions;
         $delivery->driver_id = $request->driver_id;
         $delivery->status = 'pending';
         $delivery->amount = $this->calculateAmount($request->package_type, $request->delivery_type);
         $delivery->save();
+
+        // Create calendar events for client and driver
+        \App\Models\CalendarEvent::create([
+            'user_id' => $delivery->client_id,
+            'user_type' => \App\Models\Client::class,
+            'delivery_id' => $delivery->id,
+            'event_date' => $delivery->delivery_date,
+            'event_title' => 'Delivery: ' . $delivery->pickup_location . ' to ' . $delivery->destination,
+            'event_description' => 'Delivery from ' . $delivery->pickup_location . ' to ' . $delivery->destination,
+        ]);
+
+        \App\Models\CalendarEvent::create([
+            'user_id' => $delivery->driver_id,
+            'user_type' => \App\Models\Driver::class,
+            'delivery_id' => $delivery->id,
+            'event_date' => $delivery->delivery_date,
+            'event_title' => 'Delivery: ' . $delivery->pickup_location . ' to ' . $delivery->destination,
+            'event_description' => 'Delivery from ' . $delivery->pickup_location . ' to ' . $delivery->destination,
+        ]);
 
         // Notify the assigned driver
         $fcmService = new FcmServiceV1();
