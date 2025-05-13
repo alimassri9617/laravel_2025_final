@@ -139,7 +139,7 @@
             <div class="col-md-3 mb-4">
                 <h6 class="fw-bold">Contact</h6>
                 <ul class="list-unstyled">
-                    <li><i class="fas fa-envelope me-2"></i> support@deliveryapp.com</li>
+                    <li><i class="fas fa-envelope me-2"></i> antonine@deliveryapp.com</li>
                     <li><i class="fas fa-phone me-2"></i> +961 1 234 567</li>
                 </ul>
             </div>
@@ -154,7 +154,7 @@
             </div>
         </div>
         <hr class="bg-white">
-        <div class="text-center small">&copy; 2024 DeliveryApp. All rights reserved.</div>
+        <div class="text-center small">&copy; 2025 DeliveryApp. All rights reserved.</div>
     </div>
 </footer>
 

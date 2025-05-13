@@ -136,7 +136,7 @@ class DriverController extends Controller
     public function logout()
     {
         Session::forget(['driver_id', 'driver_name']);
-        return redirect()->route('driver.login');
+        return redirect('/');
     }
 
     // Dashboard

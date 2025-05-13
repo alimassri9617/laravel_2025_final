@@ -55,6 +55,9 @@
                                 @if($delivery->status == 'completed')
                                     <span class="badge bg-success">Yes</span>
                                     <button type="button" class="btn btn-secondary btn-sm mt-2" disabled>Completed</button>
+                                    <a href="{{ route('driver.chat.show', $delivery->id) }}" class="btn btn-success btn-sm mt-2 ms-2">
+                                        <i class="bi bi-chat-dots me-1"></i> Chat with Client
+                                    </a>
                                 @elseif($delivery->status == 'pending')
                                     <form action="{{ route('driver.accept-delivery', $delivery->id) }}" method="POST" style="display:inline-block;">
                                         @csrf
@@ -69,7 +72,9 @@
                                         @csrf
                                         <button type="submit" class="btn btn-primary btn-sm mt-2">Mark as Complete</button>
                                     </form>
-                                    <a href="{{ route('driver.chat.show', $delivery->id) }}" class="btn btn-info btn-sm mt-2 ms-2">Chat with Client</a>
+                                    <a href="{{ route('driver.chat.show', $delivery->id) }}" class="btn btn-success btn-sm mt-2 ms-2">
+                                        <i class="bi bi-chat-dots me-1"></i> Chat with Client
+                                    </a>
                                 @else
                                     <span class="badge bg-danger">No</span>
                                 @endif
