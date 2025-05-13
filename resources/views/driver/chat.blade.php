@@ -144,7 +144,7 @@
       const formatted = `${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}, ` +
                         `${date.toLocaleString('default',{month:'short'})} ${date.getDate()}`;
 
-      wrapper.innerHTML = `<div class=\"text\">${msg}<small>${formatted}</small></div>`;
+      wrapper.innerHTML = `<div class="text">${msg}<small>${formatted}</small></div>`;
       chatMessages.appendChild(wrapper);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }

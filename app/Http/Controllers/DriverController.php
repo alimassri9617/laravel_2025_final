@@ -161,6 +161,7 @@ class DriverController extends Controller
         'driver' => $driver,
         'deliveries' => $deliveries,
         'notifications' => $notifications,
+        'activePage' => 'dashboard',
     ]);
 }
 
@@ -189,7 +190,8 @@ class DriverController extends Controller
        return view('driver.available-deliveries', [
            'driver' => $driver,
            'deliveries' => $deliveries,
-           'recentDeliveries' => $recentDeliveries
+           'recentDeliveries' => $recentDeliveries,
+           'activePage' => 'available-deliveries',
        ]);
    }
     // Accept a delivery
@@ -285,7 +287,8 @@ class DriverController extends Controller
             'driver' => Driver::find($driverId),
             'completedDeliveries' => $completedDeliveries,
             'totalEarnings' => $totalEarnings,
-            'pendingEarnings' => $pendingEarnings
+            'pendingEarnings' => $pendingEarnings,
+            'activePage' => 'earnings',
         ]);
     }
     public function delivaryDone(Request $request, $id)
@@ -316,7 +319,8 @@ class DriverController extends Controller
         $driver = Driver::find(Session::get('driver_id'));
 
         return view('driver.profile', [
-            'driver' => $driver
+            'driver' => $driver,
+            'activePage' => 'profile',
         ]);
     }
 
