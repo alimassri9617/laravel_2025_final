@@ -120,7 +120,7 @@ class DriverController extends Controller
 
        $driverapproved=Driver::where('email', $request->email)->where('approved', true)->first();
         if (!$driverapproved) {
-            return back()->with('error', 'Your account is not approved yet.');
+            return back()->with('error', 'Your account is not approved yet, or you entered wrong credentials.');
         }
 
         Session::put('driver_id', $driver->id);
