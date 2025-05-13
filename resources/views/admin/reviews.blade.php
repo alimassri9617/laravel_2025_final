@@ -5,11 +5,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .sidebar {
-            min-height: 100vh;
-            width: 250px;
-            background: #343a40;
-        }
         .main-content {
             flex: 1;
             padding: 20px;
@@ -20,33 +15,7 @@
     </style>
 </head>
 <body class="d-flex">
-    <!-- Sidebar -->
-    <div class="sidebar text-white p-3">
-        <h4>Admin Panel</h4>
-        <hr>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="{{ route('admin.dashboard') }}">
-                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="{{ route('admin.drivers') }}">
-                    <i class="fas fa-users me-2"></i> Driver Management
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white active" href="{{ route('admin.reviews') }}">
-                    <i class="fas fa-star me-2"></i> Driver Reviews
-                </a>
-            </li>
-            <li class="nav-item mt-auto">
-                <a class="nav-link text-white" href="{{ route('admin.logout') }}">
-                    <i class="fas fa-sign-out-alt me-2"></i> Logout
-                </a>
-            </li>
-        </ul>
-    </div>
+    @include('admin.sidebar', ['activePage' => 'reviews'])
 
     <!-- Main Content -->
     <div class="main-content">
