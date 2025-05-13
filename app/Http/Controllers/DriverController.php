@@ -120,7 +120,7 @@ class DriverController extends Controller
 
        $driverapproved=Driver::where('email', $request->email)->where('approved', true)->first();
         if (!$driverapproved) {
-            return back()->with('error', 'Your account is not approved yet.');
+            return back()->with('error', 'Your account is not approved yet, or you entered wrong credentials.');
         }
 
         Session::put('driver_id', $driver->id);
@@ -136,7 +136,7 @@ class DriverController extends Controller
     public function logout()
     {
         Session::forget(['driver_id', 'driver_name']);
-        return redirect()->route('driver.login');
+        return redirect('/');
     }
 
     // Dashboard
@@ -161,6 +161,7 @@ class DriverController extends Controller
         'driver' => $driver,
         'deliveries' => $deliveries,
         'notifications' => $notifications,
+        'activePage' => 'dashboard',
     ]);
 }
 
@@ -189,7 +190,8 @@ class DriverController extends Controller
        return view('driver.available-deliveries', [
            'driver' => $driver,
            'deliveries' => $deliveries,
-           'recentDeliveries' => $recentDeliveries
+           'recentDeliveries' => $recentDeliveries,
+           'activePage' => 'available-deliveries',
        ]);
    }
     // Accept a delivery
@@ -285,7 +287,8 @@ class DriverController extends Controller
             'driver' => Driver::find($driverId),
             'completedDeliveries' => $completedDeliveries,
             'totalEarnings' => $totalEarnings,
-            'pendingEarnings' => $pendingEarnings
+            'pendingEarnings' => $pendingEarnings,
+            'activePage' => 'earnings',
         ]);
     }
     public function delivaryDone(Request $request, $id)
@@ -316,7 +319,8 @@ class DriverController extends Controller
         $driver = Driver::find(Session::get('driver_id'));
 
         return view('driver.profile', [
-            'driver' => $driver
+            'driver' => $driver,
+            'activePage' => 'profile',
         ]);
     }
 

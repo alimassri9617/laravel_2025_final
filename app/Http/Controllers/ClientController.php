@@ -46,7 +46,7 @@ class ClientController extends Controller
     public function logout()
     {
         Session::forget(['client_id', 'client_name']);
-        return redirect()->route('client.login');
+        return redirect('/');
     }
     public function showRegistrationForm()
     {
