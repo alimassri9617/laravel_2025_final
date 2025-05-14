@@ -29,4 +29,8 @@ class Client extends Model
         return $this->morphMany(Message::class, 'sender');
     }
     
+    public function calendarEvents()
+    {
+        return $this->morphMany(\App\Models\CalendarEvent::class, 'user');
+    }
 }

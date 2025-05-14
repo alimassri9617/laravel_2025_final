@@ -72,9 +72,9 @@
                         <div class="col-md-6">
                             <label for="delivery_type" class="form-label">Delivery Type</label>
                             <select class="form-select" id="delivery_type" name="delivery_type" required>
-                                <option value="standard">Standard (1-3 days)</option>
-                                <option value="express">Express (Same day)</option>
-                                <option value="overnight">Overnight</option>
+                                <option value="standard">Standard (2-3 days)</option>
+                                <option value="express">same day</option>
+                                <option value="overnight">fast</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -96,6 +96,112 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <div class="col-md-6">
+                            <label for="payment_method" class="form-label">Payment Method</label>
+                            <select class="form-select" id="payment_method" name="payment_method" required>
+                                <option value="" disabled selected>Select Payment Method</option>
+                                <option value="cash_on_delivery">Cash on delivery</option>
+                                <option value="credit_card">Credit card</option>
+                                <option value="crypto_currency">Crypto currency</option>
+                            </select>
+                        </div>
+
+                        <div id="crypto_type_container" class="col-md-6" style="display:none;">
+                            <label for="crypto_type" class="form-label">Select Crypto Currency</label>
+                            <select class="form-select" id="crypto_type" name="crypto_type">
+                                <option value="" disabled selected>Select Crypto Currency</option>
+                                <option value="bitcoin">Bitcoin</option>
+                                <option value="ethereum">Ethereum</option>
+                                <option value="litecoin">Litecoin</option>
+                                <option value="ripple">Ripple</option>
+                                <option value="dogecoin">Dogecoin</option>
+                            </select>
+                        </div>
+
+                        <div id="crypto_credentials_fields" class="col-12" style="display:none;">
+                            <div class="card p-3 border-secondary rounded">
+                                <h6>Crypto Credentials</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="wallet_address" class="form-label">Wallet Address</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="wallet_address"
+                                            name="wallet_address"
+                                            placeholder="Enter wallet address"
+                                            />
+                                        <div class="invalid-feedback">
+                                            Please enter a valid wallet address.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="crypto_key" class="form-label">Crypto Key</label>
+                                        <input
+                                            type="password"
+                                            class="form-control"
+                                            id="crypto_key"
+                                            name="crypto_key"
+                                            placeholder="Enter crypto key"
+                                            />
+                                        <div class="invalid-feedback">
+                                            Please enter your crypto key.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="credit_card_fields" class="col-12" style="display:none;">
+                            <div class="card p-3 border-secondary rounded">
+                                <h6>Credit Card Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="card_number" class="form-label">Card Number</label>
+                                        <input
+                                            type="tel"
+                                            class="form-control"
+                                            id="card_number"
+                                            name="card_number"
+                                            pattern="[0-9]{13,19}"
+                                            maxlength="19"
+                                            inputmode="numeric"
+                                            placeholder="Enter card number"
+                                            title="Please enter between 13 and 19 digits"
+                                            />
+                                        <div class="invalid-feedback">
+                                            Please enter a valid card number (13 to 19 digits).
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="expiry_date" class="form-label">Expiry Date</label>
+                                        <input type="month" class="form-control" id="expiry_date" name="expiry_date" placeholder="MM/YYYY" />
+                                        <div class="invalid-feedback">
+                                            Please enter a valid expiry date.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        <input
+                                            type="tel"
+                                            class="form-control"
+                                            id="cvv"
+                                            name="cvv"
+                                            pattern="[0-9]{3,4}"
+                                            maxlength="4"
+                                            inputmode="numeric"
+                                            placeholder="CVV"
+                                            title="Please enter a 3- or 4-digit CVV"
+                                            />
+                                            <div class="invalid-feedback">
+                                            Please enter a valid CVV (3 or 4 digits).
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-12 d-flex justify-content-center">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Submit Delivery Request
@@ -153,6 +259,133 @@
         // Initial fetch if both locations are pre-selected
         window.addEventListener('DOMContentLoaded', () => {
             fetchFilteredDrivers();
+            // Payment method change handler
+            const paymentMethodSelect = document.getElementById('payment_method');
+            const creditCardFields = document.getElementById('credit_card_fields');
+            const cryptoTypeContainer = document.getElementById('crypto_type_container');
+            const cryptoTypeSelect = document.getElementById('crypto_type');
+            const cryptoCredentialsFields = document.getElementById('crypto_credentials_fields');
+
+            function toggleCreditCardFields() {
+                if (paymentMethodSelect.value === 'credit_card') {
+                    creditCardFields.style.display = 'block';
+                    // Make credit card fields required
+                    document.getElementById('card_number').required = true;
+                    document.getElementById('expiry_date').required = true;
+                    document.getElementById('cvv').required = true;
+                } else {
+                    creditCardFields.style.display = 'none';
+                    // Remove required attribute
+                    document.getElementById('card_number').required = false;
+                    document.getElementById('expiry_date').required = false;
+                    document.getElementById('cvv').required = false;
+                    // Clear validation states
+                    document.getElementById('card_number').classList.remove('is-invalid');
+                    document.getElementById('expiry_date').classList.remove('is-invalid');
+                    document.getElementById('cvv').classList.remove('is-invalid');
+                }
+            }
+
+            function toggleCryptoFields() {
+                if (paymentMethodSelect.value === 'crypto_currency') {
+                    cryptoTypeContainer.style.display = 'block';
+                    cryptoTypeSelect.required = true;
+                } else {
+                    cryptoTypeContainer.style.display = 'none';
+                    cryptoTypeSelect.required = false;
+                    cryptoTypeSelect.value = '';
+                    cryptoCredentialsFields.style.display = 'none';
+                    document.getElementById('wallet_address').required = false;
+                    document.getElementById('crypto_key').required = false;
+                    document.getElementById('wallet_address').classList.remove('is-invalid');
+                    document.getElementById('crypto_key').classList.remove('is-invalid');
+                }
+            }
+
+            function toggleCryptoCredentialsFields() {
+                if (cryptoTypeSelect.value) {
+                    cryptoCredentialsFields.style.display = 'block';
+                    document.getElementById('wallet_address').required = true;
+                    document.getElementById('crypto_key').required = true;
+                } else {
+                    cryptoCredentialsFields.style.display = 'none';
+                    document.getElementById('wallet_address').required = false;
+                    document.getElementById('crypto_key').required = false;
+                    document.getElementById('wallet_address').classList.remove('is-invalid');
+                    document.getElementById('crypto_key').classList.remove('is-invalid');
+                }
+            }
+
+            paymentMethodSelect.addEventListener('change', () => {
+                toggleCreditCardFields();
+                toggleCryptoFields();
+            });
+
+            cryptoTypeSelect.addEventListener('change', toggleCryptoCredentialsFields);
+
+            toggleCreditCardFields();
+            toggleCryptoFields();
+            toggleCryptoCredentialsFields();
+
+            // Form validation on submit
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                let valid = true;
+
+                if (paymentMethodSelect.value === 'credit_card') {
+                    const cardNumber = document.getElementById('card_number');
+                    const expiryDate = document.getElementById('expiry_date');
+                    const cvv = document.getElementById('cvv');
+
+                    // Validate card number (13-19 digits)
+                    const cardNumberPattern = /^\d{13,19}$/;
+                    if (!cardNumberPattern.test(cardNumber.value)) {
+                        cardNumber.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        cardNumber.classList.remove('is-invalid');
+                    }
+
+                    // Validate expiry date (must be in the future)
+                    if (!expiryDate.value || new Date(expiryDate.value + '-01') <= new Date()) {
+                        expiryDate.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        expiryDate.classList.remove('is-invalid');
+                    }
+
+                    // Validate CVV (3 or 4 digits)
+                    const cvvPattern = /^\d{3,4}$/;
+                    if (!cvvPattern.test(cvv.value)) {
+                        cvv.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        cvv.classList.remove('is-invalid');
+                    }
+                } else if (paymentMethodSelect.value === 'crypto_currency') {
+                    const walletAddress = document.getElementById('wallet_address');
+                    const cryptoKey = document.getElementById('crypto_key');
+
+                    if (!walletAddress.value.trim()) {
+                        walletAddress.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        walletAddress.classList.remove('is-invalid');
+                    }
+
+                    if (!cryptoKey.value.trim()) {
+                        cryptoKey.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        cryptoKey.classList.remove('is-invalid');
+                    }
+                }
+
+                if (!valid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
         });
     </script>
 </body>

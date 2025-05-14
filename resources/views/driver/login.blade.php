@@ -7,10 +7,13 @@
     <style>
         .password-toggle { cursor: pointer; position: absolute; right: 10px; top: 10px; }
         .password-wrapper { position: relative; }
-        .card { max-width: 450px; }
+        .card { 
+            max-width: 450px; 
+            background-color: rgba(255, 255, 255, 0.6);
+        }
         .login-bg { 
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                       url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+                       url('/images/Shabeb.jpg') no-repeat center center fixed;
             background-size: cover;
             background-position: center;
             min-height: 100vh;
@@ -72,12 +75,7 @@
                 <div class="mt-3 text-center">
                     Don't have an account? <a href="{{ route('driver.register') }}">Register here</a>
                 </div>
-                <hr>
-                <div class="text-center">
-                    <p class="mb-2">Or login with:</p>
-                    <a href="#" class="btn btn-outline-primary me-2"><i class="fab fa-google"></i></a>
-                    <a href="#" class="btn btn-outline-primary"><i class="fab fa-facebook-f"></i></a>
-                </div>
+                
             </div>
         </div>
     </div>
