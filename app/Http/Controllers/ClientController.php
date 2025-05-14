@@ -227,6 +227,7 @@ class ClientController extends Controller
         return response()->json($drivers);
     }
 
+    
     // Store new delivery
     public function storeDelivery(Request $request)
     {
