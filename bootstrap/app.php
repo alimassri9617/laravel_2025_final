@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // $middleware->add(\App\Http\Middleware\AdminSessionMiddleware::class);
         
       
-    })
+    }) 
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
